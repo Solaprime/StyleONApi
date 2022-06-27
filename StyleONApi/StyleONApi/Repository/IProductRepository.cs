@@ -11,6 +11,7 @@ namespace StyleONApi.Repository
         Task<IEnumerable<Product>> GetAllProducts();
         Task<Product> GetProduct(Guid productId);
         Task CreateProduct(Product product);
+        Task DeleteProduct(Product product);
 
 
         //  Check how multipe products are created

@@ -25,9 +25,10 @@ namespace StyleONApi.Repository
             }
             product.ProductId = new Guid();
             await _context.Products.AddAsync(product);
+            await  _context.SaveChangesAsync();
         }
 
-       
+      
 
         public async  Task<IEnumerable<Product>> GetAllProducts()
         {
@@ -44,7 +45,11 @@ namespace StyleONApi.Repository
             // after the productId just add an "And" to check the 
             // seller Id 
         }
+        public async  Task DeleteProduct(Product product)
+        {
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+        }
 
-     
     }
 }

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+// since my repository class are in asynchronous pattern , My controller should also be In Asyn format to avoid some funny errors
 namespace StyleONApi.Controllers
 {
     [Route("api/[controller]")]
@@ -20,25 +20,52 @@ namespace StyleONApi.Controllers
         }
 
 
-        // Get all Authors
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllProduct()
+        //{
+        //    var result = await _repository.GetAllProducts();
+        //    return Ok(result);
+
+        //}
+
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetAllProduct()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAllProduct()
         {
-            var result = _repository.GetAllProducts();
+            var result = await _repository.GetAllProducts();
             return Ok(result);
+
         }
 
-        // Get Single Author
-        [HttpGet("{productId}", Name = "GetAuthor")]
-        public ActionResult<Product> GetProduct(Guid productId)
+
+        [HttpGet("{productId}", Name = "GetProduct")]
+        public async Task<ActionResult<Product>> GetProductsById(Guid productId)
         {
-            var result = _repository.GetProduct(productId);
+            var result = await _repository.GetProduct(productId);
             if (result == null)
             {
-                return NotFound("Product Not Found");
+                return NotFound("We cant find the Product you are Looking for");
             }
             return Ok(result);
         }
-       
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct(Product product)
+        {
+             await _repository.CreateProduct(product);
+            //return CreatedAtRoute("GetProduct");
+            return Ok();
+        }
+
+        [HttpDelete("{productId}")]
+        public  async  Task<IActionResult> DeleteProduct(Guid productId)
+        {
+            var productToDelete = await _repository.GetProduct(productId);
+            if (productToDelete == null)
+            {
+                return NotFound("We can find the Product you are Lokking for");
+            }
+            await  _repository.DeleteProduct(productToDelete);
+            return NoContent();
+        }
     }
 }
