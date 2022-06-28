@@ -21,6 +21,8 @@ namespace StyleONApi.Entities
         public DateTimeOffset DatePosted { get; set; }
 
 
+        public List<ImageObject> Images { get; set; }
+
         // Check how to work with enum, and check how will u work with the User, seller, Buyer
         //public Guid SellerId { get; set; }
         //public enum Category { get; set; }

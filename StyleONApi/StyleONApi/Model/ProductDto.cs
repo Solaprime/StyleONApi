@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StyleONApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace StyleONApi.Model
 
         public Double Reviews { get; set; }
         public DateTimeOffset DatePosted { get; set; }
+
+        public List<ImageObject> Images { get; set; }
 
 
     }

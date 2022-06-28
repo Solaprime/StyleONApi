@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StyleONApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,5 +19,7 @@ namespace StyleONApi.Model
 
         public Double Reviews { get; set; }
         public DateTimeOffset DatePosted { get; set; }
+        public List<ImageObject> Images { get; set; }
+
     }
 }
