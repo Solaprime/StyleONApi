@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,8 @@ namespace StyleONApi
             services.AddScoped<IProductRepository, ProductRepository>();
 
             services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")));
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
             // Json excepetion stuff copied from stacKoVerflow

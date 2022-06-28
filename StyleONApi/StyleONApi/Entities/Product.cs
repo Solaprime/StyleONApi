@@ -28,5 +28,8 @@ namespace StyleONApi.Entities
         //public List<String> ImageUrl { get; set; } = new List<string>();
 
 
+
+        // when u start making changes to my entity classs 
+        // remeber to vhange the DTO AS well
     }
 }
