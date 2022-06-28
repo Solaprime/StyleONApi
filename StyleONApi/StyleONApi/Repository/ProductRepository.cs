@@ -65,5 +65,26 @@ namespace StyleONApi.Repository
             }
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> ProductExist(Guid productId)
+        {
+            if (productId == null)
+            {
+                throw new ArgumentNullException(nameof(productId));
+            }
+            var productToFind = await _context.Products.Where(c => c.ProductId == productId).FirstOrDefaultAsync();
+            if (productToFind == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void UpdateProduct(Product product)
+        {
+            // No implementations
+            _context.SaveChanges();
+            
+        }
     }
 }

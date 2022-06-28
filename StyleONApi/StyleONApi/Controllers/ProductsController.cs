@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using StyleONApi.Entities;
 using StyleONApi.Model;
@@ -75,6 +76,26 @@ namespace StyleONApi.Controllers
             }
             await  _repository.DeleteProduct(productToDelete);
             return NoContent();
+        }
+        [HttpPatch("{productId}")]
+        public async Task<ActionResult> partiallyUpdateAProduct(Guid productId,
+            JsonPatchDocument<ProductForUpdate> patchDocument)
+        {
+            var productFromRepo = await _repository.GetProduct(productId);
+            if (productFromRepo == null)
+            {
+                return NotFound();
+            }
+            var productToPatch = _mapper.Map<ProductForUpdate>(productFromRepo);
+            // add some validation attribute
+            patchDocument.ApplyTo(productToPatch);
+            _mapper.Map(productToPatch, productFromRepo);
+            _repository.UpdateProduct(productFromRepo);
+            
+            //   await  _repository.UpdateProduct(productToPatch);
+            return NoContent();
+
+
         }
     }
 }

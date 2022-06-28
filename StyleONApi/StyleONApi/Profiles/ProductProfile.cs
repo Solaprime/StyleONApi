@@ -19,7 +19,10 @@ namespace StyleONApi.Profiles
             CreateMap<Product, ProductDto>();
             //CreateMap<Product, ProductForCreationDto>();
             CreateMap<ProductForCreationDto, Product>();
-                
+            CreateMap<ProductForUpdate, Product>();
+            // one of them is for Patch sake
+            CreateMap<Product, ProductForUpdate>();
+
         }
     }
 }
