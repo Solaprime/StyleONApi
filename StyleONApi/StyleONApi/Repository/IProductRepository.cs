@@ -12,14 +12,13 @@ namespace StyleONApi.Repository
         Task<Product> GetProduct(Guid productId);
         Task CreateProduct(Product product);
         Task DeleteProduct(Product product);
+        Task CreateMultipleProduct(IEnumerable<Product> products);
 
 
         //  Check how multipe products are created
-        //Task CreateMultipleProduct(IEnumerable<Product> products);
+        //Task<IEnumerable<Product>> CreateMultipleProduct(IEnumerable<Product> products);
 
 
-        //Check how delte work
-        //Task  DelteProduct(Guid productId);
 
         // check our kelvi docks implmented Update
         //void UpdateProduct(Product product);

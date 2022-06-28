@@ -24,13 +24,7 @@ namespace StyleONApi.Controllers
         }
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllProduct()
-        //{
-        //    var result = await _repository.GetAllProducts();
-        //    return Ok(result);
-
-        //}
+       
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct()
@@ -52,22 +46,16 @@ namespace StyleONApi.Controllers
             return Ok(_mapper.Map<ProductDto>(result));
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateProduct(ProductForCreationDto product)
-        //{
-        //    var productToCreate = _mapper.Map<Product>(product);
-        //     await _repository.CreateProduct(productToCreate);
-
-
-        //    // to test if the correct stuff was returrned
-
-        //    return Ok(productToCreate);
-        //}
+  
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(ProductForCreationDto product)
         {
             var productToCreate = _mapper.Map<Product>(product);
+            if (productToCreate == null)
+            {
+                return BadRequest("No products was entereed");
+            }
             await _repository.CreateProduct(productToCreate);
 
 
@@ -75,6 +63,8 @@ namespace StyleONApi.Controllers
 
             return Ok(productToCreate);
         }
+
+      
         [HttpDelete("{productId}")]
         public  async  Task<IActionResult> DeleteProduct(Guid productId)
         {

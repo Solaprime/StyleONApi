@@ -51,5 +51,19 @@ namespace StyleONApi.Repository
             await _context.SaveChangesAsync();
         }
 
+        public  async Task CreateMultipleProduct(IEnumerable<Product> products)
+        {
+            if (products == null)
+            {
+                throw new ArgumentNullException(nameof(products));
+            }
+            foreach (var item in products)
+            {
+                item.ProductId = new Guid();
+                await _context.Products.AddAsync(item);
+                
+            }
+            await _context.SaveChangesAsync();
+        }
     }
 }
