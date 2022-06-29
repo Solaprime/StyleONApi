@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StyleONApi.Context;
 using StyleONApi.Entities;
+using StyleONApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +86,49 @@ namespace StyleONApi.Repository
             // No implementations
             _context.SaveChanges();
             
+        }
+
+        public async  Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters)
+        {
+            if (productResourceParameters == null)
+            {
+                throw new ArgumentNullException(nameof(productResourceParameters));
+            }
+            if (string.IsNullOrWhiteSpace(productResourceParameters.MainCategory)
+                && 
+                string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
+            {
+                return GetAllProductNonAsync();
+            }
+            var collectionOfProduct = _context.Products as IQueryable<Product>;
+
+            if (!string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
+            {
+                var searchQuery = productResourceParameters.SearchQuery.Trim();
+                collectionOfProduct = collectionOfProduct.Where(a => a.Name.Contains(searchQuery));
+            }
+
+            return await collectionOfProduct.ToListAsync();
+
+            // implement the both dat if a consumer inputted both searchquery and maincategorry
+            // the data returned must contain the two condition mentioned
+            // code for when main Category will be Implemented
+            //if (!string.IsNullOrWhiteSpace(productResourceParameters.MainCategory))
+            //{
+            //    var mainCategory = productResourceParameters.MainCategory.Trim();
+            //    collectionOfProduct = collectionOfProduct.Where(a=>mainCategory )
+            //}
+
+            
+        }
+
+        public IEnumerable<Product> GetAllProductNonAsync()
+        {
+            // the reason we created this method is because of 
+            // Our GetAllProduct return a Task<IEnumerable<Product>>
+            // and our get asynv method with the resource aparamter return a
+            //Task<IEnumerable<Product>> so we have clashing return type
+            return  _context.Products.ToList();
         }
     }
 }

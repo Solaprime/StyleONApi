@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using StyleONApi.Repository;
+using StyleONApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,15 +26,27 @@ namespace StyleONApi.Controllers
         }
 
 
-       
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct()
+        //{
+        //    var result = await _repository.GetAllProducts();
+        //    return Ok(_mapper.Map<IEnumerable<ProductDto>>(result));
+
+        //}
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
+            [FromQuery] ProductResourceParameters productResourceParameter)
         {
-            var result = await _repository.GetAllProducts();
+            var result = await _repository.GetAllProducts(productResourceParameter);
+            if (result == null)
+            {
+                return BadRequest("Sorry we cant find what you are Looking For ");
+            }
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(result));
 
         }
+
 
 
         [HttpGet("{productId}", Name = "GetProduct")]
