@@ -52,6 +52,7 @@ namespace StyleONApi.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -64,32 +65,36 @@ namespace StyleONApi.Migrations
                     b.Property<double>("Reviews")
                         .HasColumnType("float");
 
+                    b.Property<Guid>("SellerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("SlashPrice")
                         .HasColumnType("float");
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products");
+                    b.HasIndex("SellerId");
 
-                    b.HasData(
-                        new
-                        {
-                            ProductId = new Guid("fad3d35a-704b-4b43-bcdb-5c0251e23a8b"),
-                            DatePosted = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Dior Bag",
-                            Price = 0.0,
-                            Reviews = 0.0,
-                            SlashPrice = 0.0
-                        },
-                        new
-                        {
-                            ProductId = new Guid("da2fd609-d754-4feb-8acd-c4f9ff13ba96"),
-                            DatePosted = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Shoe",
-                            Price = 0.0,
-                            Reviews = 0.0,
-                            SlashPrice = 0.0
-                        });
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("StyleONApi.Entities.Seller", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sellers");
                 });
 
             modelBuilder.Entity("StyleONApi.Entities.ImageObject", b =>
@@ -97,6 +102,15 @@ namespace StyleONApi.Migrations
                     b.HasOne("StyleONApi.Entities.Product", null)
                         .WithMany("Images")
                         .HasForeignKey("ProductId");
+                });
+
+            modelBuilder.Entity("StyleONApi.Entities.Product", b =>
+                {
+                    b.HasOne("StyleONApi.Entities.Seller", "Seller")
+                        .WithMany("Products")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

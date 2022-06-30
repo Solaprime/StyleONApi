@@ -14,22 +14,10 @@ namespace StyleONApi.Context
                 
         }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Seller> Sellers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Product>().HasData(
-                 new Product()
-                 {
-                      ProductId = Guid.NewGuid(),
-                      Name = "Dior Bag",
-
-                 },
-                 new Product()
-                 {
-                     ProductId= Guid.Parse("da2fd609-d754-4feb-8acd-c4f9ff13ba96"),
-                     Name = "Shoe"
-
-                 }
-                 );
+         
         }
     }
 }
