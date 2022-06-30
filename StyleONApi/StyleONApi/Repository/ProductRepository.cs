@@ -130,5 +130,10 @@ namespace StyleONApi.Repository
             //Task<IEnumerable<Product>> so we have clashing return type
             return  _context.Products.ToList();
         }
+
+        public  async Task<IEnumerable<Seller>> GetAllSellers()
+        {
+            return await _context.Sellers.ToListAsync();
+        }
     }
 }

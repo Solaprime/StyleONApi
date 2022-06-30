@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,9 +20,11 @@ namespace StyleONApi.Entities
       
         public Double Reviews { get; set; }
         public DateTimeOffset DatePosted { get; set; }
-
-
         public List<ImageObject> Images { get; set; }
+
+        public Seller Seller { get; set; }
+        public Guid SellerId { get; set; }
+
 
         // Check how to work with enum, and check how will u work with the User, seller, Buyer
         //public Guid SellerId { get; set; }

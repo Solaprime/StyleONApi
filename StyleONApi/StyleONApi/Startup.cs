@@ -38,7 +38,8 @@ namespace StyleONApi
                 });
             services.AddScoped<IProductRepository, ProductRepository>();
 
-            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")));
+            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb"))
+            .EnableSensitiveDataLogging());
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
