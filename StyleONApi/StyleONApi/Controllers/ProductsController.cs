@@ -91,7 +91,7 @@ namespace StyleONApi.Controllers
             return NoContent();
         }
         [HttpPatch("{productId}")]
-        public async Task<ActionResult> partiallyUpdateAProduct(Guid productId,
+        public async Task<ActionResult> PartiallyUpdateAProduct(Guid productId,
             JsonPatchDocument<ProductForUpdate> patchDocument)
         {
             var productFromRepo = await _repository.GetProduct(productId);

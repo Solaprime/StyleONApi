@@ -37,9 +37,10 @@ namespace StyleONApi
                       = new CamelCasePropertyNamesContractResolver();
                 });
             services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<ISellerRepository, SellerRepository>();
 
-            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")));
+
+            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb"))
+            .EnableSensitiveDataLogging());
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

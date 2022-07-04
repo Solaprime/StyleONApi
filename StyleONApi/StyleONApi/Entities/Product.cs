@@ -23,9 +23,11 @@ namespace StyleONApi.Entities
       
         public Double Reviews { get; set; }
         public DateTimeOffset DatePosted { get; set; }
-
-
         public List<ImageObject> Images { get; set; }
+
+        public Seller Seller { get; set; }
+        public Guid SellerId { get; set; }
+
 
         [ForeignKey("SellerId")]
         public Seller Seller { get; set; }

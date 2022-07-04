@@ -11,13 +11,18 @@ namespace StyleONApi.Context
     {
         public StyleONContext(DbContextOptions options) : base(options)
         {
-                
+                     
         }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Seller> Sellers { get; set; }
+     
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+<<<<<<< HEAD
          
+=======
+
+            
+>>>>>>> 0e8e96d9364b6b5479621b2c91a2f3a1cbf646c6
         }
     }
 }
