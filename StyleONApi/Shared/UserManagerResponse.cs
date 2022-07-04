@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Shared
 {
-    public  class UserMangerResponse
+    public  class UserManagerResponse
     {
+        public string Token { get; set; }
         public string Message { get; set; }
         public bool IsSuccess { get; set; }
 
