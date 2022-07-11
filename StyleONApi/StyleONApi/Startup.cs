@@ -79,8 +79,10 @@ namespace StyleONApi
             services.AddIdentity<IdentityUser, IdentityRole>(
                 options =>
                 {
-                    options.Password.RequireDigit = true;
-                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false; //  CHANGE TO TRUE
+                    options.Password.RequireDigit = false;    // chNGE TO TRUE
+                    options.Password.RequireLowercase = false;   // CHANGE TO TRUE
                     options.Password.RequiredLength = 5;
                     options.User.RequireUniqueEmail = true;
                     //options.SignIn.RequireConfirmedAccount = false;

@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Microsoft.AspNetCore.Identity;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,12 @@ namespace StyleONApi.AuthServices
     {
         Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model);
         Task<UserManagerResponse> LoginUserAsync(LoginViewModel model);
+        Task<UserManagerResponse> CreateRole(string name);
+        Task<IEnumerable<IdentityRole>> GetAllRole();
+        Task<IEnumerable<IdentityUser>> GetAllUsers();
+        Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail);
+        Task<UserManagerResponse> RemoveUserFromRole(RoleEmail roleEmail);
 
+        //Task<IdentityRole> GetUserRoles(string email);
     }
 }
