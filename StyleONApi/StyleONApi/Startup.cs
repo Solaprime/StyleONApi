@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using StyleONApi.AuthServices;
 using StyleONApi.Context;
+using StyleONApi.Entities;
 using StyleONApi.Repository;
 using System;
 using System.Collections.Generic;
@@ -76,7 +77,7 @@ namespace StyleONApi
 
             // Adding some Identity Stuff
 
-            services.AddIdentity<IdentityUser, IdentityRole>(
+            services.AddIdentity<ApplicationUser, IdentityRole>(
                 options =>
                 {
                     options.Password.RequireUppercase = false;

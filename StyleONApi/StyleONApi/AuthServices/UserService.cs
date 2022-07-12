@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
+using StyleONApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,13 +18,13 @@ namespace StyleONApi.AuthServices
     {
         // Identity Provide us with two class UserManger and RoleManager
         //private RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
 
 
 
-        public UserService(UserManager<IdentityUser> userManger,
+        public UserService(UserManager<ApplicationUser> userManger,
        IConfiguration configuration, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManger;
@@ -118,7 +119,7 @@ namespace StyleONApi.AuthServices
 
         }
 
-        public async  Task<IEnumerable<IdentityUser>> GetAllUsers()
+        public async  Task<IEnumerable<ApplicationUser>> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
             return users;
@@ -174,7 +175,7 @@ namespace StyleONApi.AuthServices
                     IsSuccess = false,
                 };
             }
-            var identityUser = new IdentityUser()
+            var identityUser = new ApplicationUser()
             {
                 Email = model.Email,
                 UserName = model.Email,
@@ -249,7 +250,7 @@ namespace StyleONApi.AuthServices
         }
 
         // private async Task<string> GenerateGJwtToken(IDentityUser user)
-        private async Task<string> GenerateJwtToken(IdentityUser user)
+        private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
@@ -286,7 +287,7 @@ namespace StyleONApi.AuthServices
         // Incase i ant to add a claim
 
 
-        private async Task<List<Claim>> GetAllValidClaims(IdentityUser user)
+        private async Task<List<Claim>> GetAllValidClaims(ApplicationUser user)
         {
             var claims = new List<Claim>
             {

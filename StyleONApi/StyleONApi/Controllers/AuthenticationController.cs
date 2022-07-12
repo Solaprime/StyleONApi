@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using StyleONApi.AuthServices;
+using StyleONApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace StyleONApi.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         public AuthenticationController(IUserService userService,
-           UserManager<IdentityUser> userManager,
+           UserManager<ApplicationUser> userManager,
            RoleManager<IdentityRole> roleManager)
  
         {

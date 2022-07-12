@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace StyleONApi.Context
 {
-    public class StyleONContext  : IdentityDbContext
+    public class StyleONContext  : IdentityDbContext<ApplicationUser>
     {
         public StyleONContext(DbContextOptions options) : base(options)
         {
