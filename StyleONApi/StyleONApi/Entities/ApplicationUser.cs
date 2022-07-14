@@ -15,6 +15,9 @@ namespace StyleONApi.Entities
 
         public string Position { get; set; }
 
+
+        // 4 dispatch
+        // 4 seller
     }
 }
 
