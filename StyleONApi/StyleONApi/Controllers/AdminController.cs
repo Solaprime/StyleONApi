@@ -44,17 +44,7 @@ namespace StyleONApi.Controllers
             return BadRequest("pLS TRY Agib lATER");
         }
 
-        // Findng a user
-        [HttpGet]
-        public async Task<IActionResult> FindUser([FromBody]string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                return BadRequest("We cant find User");
-            }
-            return Ok(user);
-        }
+
           
     }
 }

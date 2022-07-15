@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using StyleONApi.AuthServices;
 using StyleONApi.Entities;
+using StyleONApi.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +20,16 @@ namespace StyleONApi.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
         public AuthenticationController(IUserService userService,
            UserManager<ApplicationUser> userManager,
-           RoleManager<IdentityRole> roleManager)
+           RoleManager<IdentityRole> roleManager, IMapper mapper)
 
         {
             _userService = userService;
             _userManager = userManager;
             _roleManager = roleManager;
+            _mapper = mapper;
 
         }
         [HttpPost("Register")]
@@ -76,10 +80,12 @@ namespace StyleONApi.Controllers
         // gET aLL User
         [HttpGet]
         [Route("GetAllUsers")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<ApplicationUserDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsers();
-            return Ok(users);
+            var result = _mapper.Map<IEnumerable<ApplicationUserDto>>(users);
+            //  return Ok(users);
+            return Ok(result);
         }
 
 
@@ -177,6 +183,18 @@ namespace StyleONApi.Controllers
             return BadRequest("Something Bad happened");
         }
 
+        // Findng a user
+        [HttpGet("GetSingleUser")]
+        public async Task<ActionResult<ApplicationUserDto>> FindUser([FromBody] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("We cant find User");
+            }
+            var result = _mapper.Map<ApplicationUserDto>(user);
+            return Ok(result);
+        }
     }
 }
 
