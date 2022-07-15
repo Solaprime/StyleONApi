@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
+using StyleONApi.Context;
 using StyleONApi.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,20 +22,30 @@ namespace StyleONApi.AuthServices
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly StyleONContext _context;
+
+        private readonly TokenValidationParameters _tokenValidationParams;
 
 
 
         public UserService(UserManager<ApplicationUser> userManger,
-       IConfiguration configuration, RoleManager<IdentityRole> roleManager)
+       IConfiguration configuration, RoleManager<IdentityRole> roleManager,
+
+            TokenValidationParameters tokenValidationParams,
+
+       StyleONContext context)
         {
             _userManager = userManger;
             _configuration = configuration;
             _roleManager = roleManager;
+            _context = context;
+
+            _tokenValidationParams = tokenValidationParams;
 
 
         }
 
-        public  async Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail)
+        public async Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail)
         {
 
             var user = await _userManager.FindByEmailAsync(roleEmail.Email);
@@ -79,7 +90,7 @@ namespace StyleONApi.AuthServices
 
         }
 
-        public  async Task<UserManagerResponse> CreateRole(string rolename)
+        public async Task<UserManagerResponse> CreateRole(string rolename)
         {
             var roleExist = await _roleManager.RoleExistsAsync(rolename);
             if (!roleExist)
@@ -110,7 +121,7 @@ namespace StyleONApi.AuthServices
 
         }
 
-        public async  Task<IEnumerable<IdentityRole>> GetAllRole()
+        public async Task<IEnumerable<IdentityRole>> GetAllRole()
         {
 
             var allRoles = await _roleManager.Roles.ToListAsync();
@@ -119,7 +130,7 @@ namespace StyleONApi.AuthServices
 
         }
 
-        public async  Task<IEnumerable<ApplicationUser>> GetAllUsers()
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
             return users;
@@ -149,14 +160,16 @@ namespace StyleONApi.AuthServices
                 };
 
             }
-            var jwtToken =  await GenerateJwtToken(user);
-            return new UserManagerResponse
-            {
-                Message = "Login Succesfful ",
-                IsSuccess = true,
-                Token = jwtToken,
+            var jwtTokenResponse = await GenerateJwtToken(user);
+            //return new UserManagerResponse
+            //{
+            //    Message = "Login Succesfful ",
+            //    IsSuccess = true,
+            //    Token = jwtToken,
 
-            };
+            //};
+            return jwtTokenResponse;
+               
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -165,7 +178,7 @@ namespace StyleONApi.AuthServices
             {
                 throw new NullReferenceException("Our registerModel is null");
             }
-           
+
             var user_Exist = await _userManager.FindByEmailAsync(model.Email);
             if (user_Exist != null)
             {
@@ -187,13 +200,14 @@ namespace StyleONApi.AuthServices
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(identityUser, "AppUser");
-                var jwtToken =  await GenerateJwtToken(identityUser);
-                return new UserManagerResponse
-                {
-                    Message = "User Created Succesfully",
-                    IsSuccess = true,
-                    Token = jwtToken,
-                };
+                var jwtTokenResponse = await GenerateJwtToken(identityUser);
+                //return new UserManagerResponse
+                //{
+                //    Message = "User Created Succesfully",
+                //    IsSuccess = true,
+                //    Token = jwtToken,
+                //};
+                return jwtTokenResponse;
             }
             return new UserManagerResponse
             {
@@ -205,7 +219,7 @@ namespace StyleONApi.AuthServices
             };
         }
 
-        public  async Task<UserManagerResponse> RemoveUserFromRole(RoleEmail roleEmail)
+        public async Task<UserManagerResponse> RemoveUserFromRole(RoleEmail roleEmail)
         {
 
 
@@ -250,7 +264,8 @@ namespace StyleONApi.AuthServices
         }
 
         // private async Task<string> GenerateGJwtToken(IDentityUser user)
-        private async Task<string> GenerateJwtToken(ApplicationUser user)
+        // private async Task<string> GenerateJwtToken(ApplicationUser user)
+        private async Task<UserManagerResponse> GenerateJwtToken(ApplicationUser user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
@@ -258,30 +273,48 @@ namespace StyleONApi.AuthServices
             var claims = await GetAllValidClaims(user);
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
-
-                //Subject = new ClaimsIdentity(new[]
-                //{
-                //    new Claim("Id", user.Id),
-                //    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                //    new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
-
-                //}),
-
                 Subject = new ClaimsIdentity(claims),
-               // //  Expires = DateTime.Now.AddHours(2),
+                Expires = DateTime.Now.AddMinutes(5),    //AddSeconds(20) for test sake
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256)
-
+                SecurityAlgorithms.HmacSha256Signature)
             };
+
+
+
+
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            return jwtTokenHandler.WriteToken(token);
+            var jwtToken = jwtTokenHandler.WriteToken(token);
+
+            var refreshToken = new RefreshToken()
+            {
+                JwtId = token.Id,
+                IsUsed = false,
+                IsRevorked = false,
+                UserId = user.Id,
+                AddedDate = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddMonths(6),
+                Token = RandomString(35) + Guid.NewGuid()
+            };
 
 
-            // Write code to refreshh token as welll
+            // Check thE ID property of Refrshtoken
+          
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
 
+
+            return new UserManagerResponse()
+            {
+                Token = jwtToken,
+                IsSuccess = true,
+                RefreshToken = refreshToken.Token
+            };
 
         }
+
+
+
+
 
         // Getting all valid claims for the suer 
         // Incase i ant to add a claim
@@ -324,5 +357,172 @@ namespace StyleONApi.AuthServices
         }
 
 
+
+
+        private string RandomString(int length)
+        {
+            var random = new Random();
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(x => x[random.Next(x.Length)]).ToArray());
+        }
+
+
+
+
+        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+        {
+            var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+
+            return dateTimeVal;
+        }
+
+
+
+
+
+
+        // Method to Genrate and RefreshToken
+        public async Task<UserManagerResponse> VerifyAndGenerateToken(TokenRequest tokenRequest)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                // Validation 1 - Validation JWT token format
+                _tokenValidationParams.ValidateLifetime = false;
+                var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParams, out var validatedToken);
+                _tokenValidationParams.ValidateLifetime = true;
+
+                // Validation 2 - Validate encryption alg
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                {
+                    // To check Validation Algoriothm
+                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
+
+                    if (result == false)
+                    {
+                        return null;
+                    }
+                }
+
+                // Validation 3 - validate expiry date
+                var utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+
+                var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
+
+                if (expiryDate > DateTime.UtcNow)
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Token has not yet expired"
+                        }
+                    };
+                }
+
+                // validation 4 - validate existence of the token
+                var storedToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);
+
+                if (storedToken == null)
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Token does not exist"
+                        }
+                    };
+                }
+
+                // Validation 5 - validate if used
+                if (storedToken.IsUsed)
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Token has been used"
+                        }
+                    };
+                }
+
+                // Validation 6 - validate if revoked
+                if (storedToken.IsRevorked)
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Token has been revoked"
+                        }
+                    };
+                }
+
+                // Validation 7 - validate the id
+                var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+
+                if (storedToken.JwtId != jti)
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Token doesn't match"
+                        }
+                    };
+                }
+
+                // Validation 8 - validate stored token expiry date
+                if (storedToken.ExpiryDate < DateTime.UtcNow)
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Refresh token has expired"
+                        }
+                    };
+                }
+
+                // update current token 
+
+                storedToken.IsUsed = true;
+                _context.RefreshTokens.Update(storedToken);
+                await _context.SaveChangesAsync();
+
+                // Generate a new token
+                var dbUser = await _userManager.FindByIdAsync(storedToken.UserId);
+                return await GenerateJwtToken(dbUser);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Lifetime validation failed. The token is expired."))
+                {
+
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Token has expired please re-login"
+                        }
+                    };
+
+                }
+                else
+                {
+                    return new UserManagerResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new List<string>() {
+                            "Something went wrong."
+                        }
+                    };
+                }
+            }
+        }
+        // Replacre the response and context
     }
 }

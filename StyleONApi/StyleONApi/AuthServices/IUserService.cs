@@ -18,6 +18,7 @@ namespace StyleONApi.AuthServices
         Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail);
         Task<UserManagerResponse> RemoveUserFromRole(RoleEmail roleEmail);
 
+        Task<UserManagerResponse> VerifyAndGenerateToken(TokenRequest tokenRequest);
         //Task<IdentityRole> GetUserRoles(string email);
     }
 }
