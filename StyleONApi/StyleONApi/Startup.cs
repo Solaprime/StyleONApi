@@ -51,6 +51,25 @@ namespace StyleONApi
             // Our Authentication flow
             // the first part tells asp.net authentication flow to use the JWrBearerDefaults
             // found in the JWtBearer flow
+
+
+
+            // to retrieve the Key from our AppSettings
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("JwtConfig:Secret").Value);
+            // This is will be a token validation parameter to work with the token and refreshtoken flow
+            var tokenValidationParams = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false, // this is only for development mode 
+                ValidateAudience = false, // this is only for development mode
+                // check the requireexpirationtime property properlu
+                RequireExpirationTime = false,  // this is only for development mode in real life token expired and theny need to be refreshed
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+
+            };
+            services.AddSingleton(tokenValidationParams);
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,21 +78,11 @@ namespace StyleONApi
             })
                 .AddJwtBearer(jwt =>
                 {
-                    var key = Encoding.ASCII.GetBytes(Configuration.GetSection("JwtConfig:Secret").Value);
+
                     jwt.SaveToken = true;
-                    jwt.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false, // this is only for development mode 
-                        ValidateAudience = false, // this is only for development mode
-                        RequireExpirationTime = false,  // this is only for development mode in real life token expired and theny need to be refreshed
-                        ValidateLifetime = true
-
-
-                    };
-                }
-             );
+                    jwt.TokenValidationParameters = tokenValidationParams;
+                  
+                });
 
             // Adding some Identity Stuff
 

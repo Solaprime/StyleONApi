@@ -21,7 +21,7 @@ namespace StyleONApi.Controllers
         public AuthenticationController(IUserService userService,
            UserManager<ApplicationUser> userManager,
            RoleManager<IdentityRole> roleManager)
- 
+
         {
             _userService = userService;
             _userManager = userManager;
@@ -162,9 +162,21 @@ namespace StyleONApi.Controllers
             }
         }
 
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.VerifyAndGenerateToken(tokenRequest);
+                if (result.IsSuccess == false)
+                {
+                    return BadRequest(result);
+                }
+                return Ok(result);
+            }
+            return BadRequest("Something Bad happened");
+        }
 
     }
 }
 
-// for login Line 46 and and for usrservice line 33
-// for createAccoutn  register line 27 userservice 86
