@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +17,9 @@ namespace StyleONApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, AppSeller")]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repository;
@@ -35,6 +40,7 @@ namespace StyleONApi.Controllers
         //}
 
         [HttpGet]
+       [Authorize(Roles ="AppUser, AppSeller")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
             [FromQuery] ProductResourceParameters productResourceParameter)
         {
@@ -50,6 +56,7 @@ namespace StyleONApi.Controllers
 
 
         [HttpGet("{productId}", Name = "GetProduct")]
+       [Authorize(Roles = "AppUser, AppSeller")]
         public async Task<ActionResult<ProductDto>> GetProductsById(Guid productId)
         {
             var result = await _repository.GetProduct(productId);
@@ -63,6 +70,7 @@ namespace StyleONApi.Controllers
   
 
         [HttpPost]
+        [Authorize(Roles ="AppSeller")]
         public async Task<IActionResult> CreateProduct(ProductForCreationDto product)
         {
             var productToCreate = _mapper.Map<Product>(product);
@@ -80,6 +88,7 @@ namespace StyleONApi.Controllers
 
       
         [HttpDelete("{productId}")]
+       [Authorize(Roles = "AppSeller")]
         public  async  Task<IActionResult> DeleteProduct(Guid productId)
         {
             var productToDelete = await _repository.GetProduct(productId);
