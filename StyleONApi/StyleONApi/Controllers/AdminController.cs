@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StyleONApi.AuthServices;
 using StyleONApi.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,17 @@ namespace StyleONApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+   // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly UserService _userService;
+        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, UserService userService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _userService = userService;
         }
 
         // Deleting a user
@@ -45,6 +48,20 @@ namespace StyleONApi.Controllers
         }
 
 
+
+        // Bug to Fix
+
+        [HttpGet("GetAllUserInaRole")]
+        public async Task<IActionResult> GetAllUserInaRole([FromBody] string rolename)
+        {
+            if (rolename == null)
+            {
+                throw new ArgumentNullException(nameof(rolename));
+            }
+            var userInRole = await _userService.FindAllUserInRole(rolename);
+            return Ok(userInRole);
+
+        }
           
     }
 }

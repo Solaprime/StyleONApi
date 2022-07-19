@@ -195,6 +195,18 @@ namespace StyleONApi.Controllers
             var result = _mapper.Map<ApplicationUserDto>(user);
             return Ok(result);
         }
+
+        [HttpPost("UpdateSeller")]
+        public async Task<IActionResult> UpdateSeller([FromBody] SellerForUpdateDto sellerDto)
+        {
+            var selllerToUpdate = _mapper.Map<Seller>(sellerDto);
+            var seller = await _userService.UpdateSeller(selllerToUpdate);
+            if (seller.IsSuccess)
+            {
+                return Ok(seller.Message);
+            }
+            return BadRequest(seller);
+        }
     }
 }
 
