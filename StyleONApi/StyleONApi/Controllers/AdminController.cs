@@ -19,8 +19,8 @@ namespace StyleONApi.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserService _userService;
-        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, UserService userService)
+        private readonly IUserService _userService;
+        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUserService userService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
