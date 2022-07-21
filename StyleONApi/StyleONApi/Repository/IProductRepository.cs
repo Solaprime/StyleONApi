@@ -18,6 +18,7 @@ namespace StyleONApi.Repository
         Task<bool> ProductExist(Guid productId);
          void UpdateProduct(Product product);
         Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
+        
 
 
         //  Check how multipe products are created

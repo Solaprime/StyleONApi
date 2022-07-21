@@ -13,10 +13,17 @@ namespace Shared
         public string Email { get; set; }
         [Required]
         [StringLength(50, MinimumLength =5)]
+        [DataType(DataType.Password)]
+
         public string PassWord { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 5)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm Password")]
+        [Compare("PassWord",
+            ErrorMessage = "Tested a new Data Attribute confirm Password and Paassword dont match")]
+
         public string ConfirmPassword { get; set; }
     }
 }

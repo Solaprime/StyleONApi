@@ -1,19 +1,25 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using StyleONApi.AuthServices;
 using StyleONApi.Context;
+using StyleONApi.Entities;
 using StyleONApi.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace StyleONApi
@@ -30,30 +36,87 @@ namespace StyleONApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISellerRepository, SellersRepository>();
+
+
+            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")).EnableSensitiveDataLogging());
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddControllers()
                 .AddNewtonsoftJson(setupAction =>
                 {
                     setupAction.SerializerSettings.ContractResolver
                       = new CamelCasePropertyNamesContractResolver();
                 });
-            services.AddScoped<IProductRepository, ProductRepository>();
+         
 
-            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")));
+            // Our Authentication flow
+            // the first part tells asp.net authentication flow to use the JWrBearerDefaults
+            // found in the JWtBearer flow
 
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
+            // to retrieve the Key from our AppSettings
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("JwtConfig:Secret").Value);
+            // This is will be a token validation parameter to work with the token and refreshtoken flow
+            var tokenValidationParams = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false, // this is only for development mode 
+                ValidateAudience = false, // this is only for development mode
+                // check the requireexpirationtime property properlu
+                RequireExpirationTime = false,  // this is only for development mode in real life token expired and theny need to be refreshed
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+
+            };
+            services.AddSingleton(tokenValidationParams);
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(jwt =>
+                {
+
+                    jwt.SaveToken = true;
+                    jwt.TokenValidationParameters = tokenValidationParams;
+                  
+                });
+
+            // Adding some Identity Stuff
+
+            services.AddIdentity<ApplicationUser, IdentityRole>(
+                options =>
+                {
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false; //  CHANGE TO TRUE
+                    options.Password.RequireDigit = false;    // chNGE TO TRUE
+                    options.Password.RequireLowercase = false;   // CHANGE TO TRUE
+                    options.Password.RequiredLength = 5;
+                    options.User.RequireUniqueEmail = true;
+                    //options.SignIn.RequireConfirmedAccount = false;
+                }).AddEntityFrameworkStores<StyleONContext>().AddDefaultTokenProviders();
+
+
+         
             // Json excepetion stuff copied from stacKoVerflow
 
-            //services.AddControllersWithViews().AddNewtonsoftJson(options =>
-            //options.SerializerSettings.ReferenceLoopHandling
-            //= Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                //services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                //options.SerializerSettings.ReferenceLoopHandling
+                //= Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            //services.AddControllers().AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            //    options.JsonSerializerOptions.WriteIndented = true;
-            //});
+                //services.AddControllers().AddJsonOptions(options =>
+                //{
+                //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                //    options.JsonSerializerOptions.WriteIndented = true;
+                //});
+
 
         }
 
@@ -68,6 +131,7 @@ namespace StyleONApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
