@@ -98,7 +98,8 @@ namespace StyleONApi.Repository
                 && 
                 string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
             {
-                return GetAllProductNonAsync();
+               // return GetAllProductNonAsync();
+                return await GetAllProducts();
             }
             var collectionOfProduct = _context.Products as IQueryable<Product>;
 
@@ -130,5 +131,7 @@ namespace StyleONApi.Repository
             //Task<IEnumerable<Product>> so we have clashing return type
             return  _context.Products.ToList();
         }
+
+      
     }
 }

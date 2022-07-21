@@ -14,6 +14,7 @@ namespace StyleONApi.Entities
             Products = new List<Product>();
         }
         [Required]
+        
         public Guid SellerId { get; set; }
         public int NumberOfCompletedSales { get; set; }
         public ICollection<Product> Products { get; set; }
@@ -24,6 +25,7 @@ namespace StyleONApi.Entities
         [Required]
         public string Email { get; set; }
         public ApplicationUser UserFlow { get; set; }
-       
+        public Double StoreReview { get; set; }
+
     }
 }

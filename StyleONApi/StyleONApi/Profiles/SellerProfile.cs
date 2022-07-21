@@ -14,7 +14,9 @@ namespace StyleONApi.Profiles
         {
            
             CreateMap<SellerForUpdateDto, Seller>();
-           // CreateMap<Seller, SellerForUpdateDto>();
+            CreateMap<Seller, SellerDto>();
+
+           // CreateMap<SellerDto, Seller>();
         }
     }
 }

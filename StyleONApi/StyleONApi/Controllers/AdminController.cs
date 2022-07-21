@@ -65,3 +65,4 @@ namespace StyleONApi.Controllers
           
     }
 }
+// Add a propety to Access seller from ApplicationUser flow

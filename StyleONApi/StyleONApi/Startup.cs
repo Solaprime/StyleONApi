@@ -36,17 +36,22 @@ namespace StyleONApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISellerRepository, SellersRepository>();
+
+
+            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")).EnableSensitiveDataLogging());
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddControllers()
                 .AddNewtonsoftJson(setupAction =>
                 {
                     setupAction.SerializerSettings.ContractResolver
                       = new CamelCasePropertyNamesContractResolver();
                 });
-            services.AddScoped<IProductRepository, ProductRepository>();
-
-            services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")).EnableSensitiveDataLogging());
-
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+         
 
             // Our Authentication flow
             // the first part tells asp.net authentication flow to use the JWrBearerDefaults
@@ -99,8 +104,7 @@ namespace StyleONApi
                 }).AddEntityFrameworkStores<StyleONContext>().AddDefaultTokenProviders();
 
 
-            services.AddScoped<IUserService, UserService>();
-
+         
             // Json excepetion stuff copied from stacKoVerflow
 
                 //services.AddControllersWithViews().AddNewtonsoftJson(options =>

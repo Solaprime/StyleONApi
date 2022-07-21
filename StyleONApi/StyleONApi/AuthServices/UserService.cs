@@ -6,6 +6,7 @@ using Shared;
 using StyleONApi.Context;
 using StyleONApi.Entities;
 using StyleONApi.Model;
+using StyleONApi.Repository;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,6 +25,7 @@ namespace StyleONApi.AuthServices
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly StyleONContext _context;
+        private readonly ISellerRepository _sellerRepository;
 
         private readonly TokenValidationParameters _tokenValidationParams;
 
@@ -33,6 +35,7 @@ namespace StyleONApi.AuthServices
        IConfiguration configuration, RoleManager<IdentityRole> roleManager,
 
             TokenValidationParameters tokenValidationParams,
+            ISellerRepository sellerRepository,
 
        StyleONContext context)
         {
@@ -40,7 +43,7 @@ namespace StyleONApi.AuthServices
             _configuration = configuration;
             _roleManager = roleManager;
             _context = context;
-
+            _sellerRepository = sellerRepository;
             _tokenValidationParams = tokenValidationParams;
 
 
@@ -170,7 +173,7 @@ namespace StyleONApi.AuthServices
 
             //};
             return jwtTokenResponse;
-               
+
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -299,7 +302,7 @@ namespace StyleONApi.AuthServices
 
 
             // Check thE ID property of Refrshtoken
-          
+
             await _context.RefreshTokens.AddAsync(refreshToken);
             await _context.SaveChangesAsync();
 
@@ -525,29 +528,47 @@ namespace StyleONApi.AuthServices
             }
         }
 
-        public async  Task<SimpleResponse> UpdateSeller(Seller seller)
+        public async Task<SimpleResponse> UpdateSeller(Seller seller)
         {
             if (seller == null)
             {
                 throw new ArgumentNullException(nameof(seller));
             }
-         
+
             // checj user exist'
             var user = await _userManager.FindByEmailAsync(seller.Email);
-           
+
             if (user != null)
             {
                 // check role
                 var roleSeller = await _userManager.IsInRoleAsync(user, "AppSeller");
                 if (roleSeller)
                 {
-                    seller.SellerId = Guid.NewGuid();
+
+                    // Start 
+                    var ifSellerHasNotUpdated = await _sellerRepository.CheckIfSellershasnotUpdated(seller);
+                    if (!ifSellerHasNotUpdated)
+                    {
+                        return new SimpleResponse
+                        {
+                            IsSuccess = false,
+                            Message = $"A seller with this  Email is already registered as a seller"
+
+                        };
+                    }
+                
+                    // Finish
+
+
+
+                 seller.SellerId = Guid.NewGuid();
                     _context.Sellers.Add(seller);
-                   await  _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                    // Send a Mail to seller telling them Dere details have been Updated
                     return new SimpleResponse
                     {
-                         IsSuccess = true,
-                         Message = $"You are now ready to start Posting ur product On styleOn"
+                        IsSuccess = true,
+                        Message = $"You are now ready to start Posting ur product On styleOn"
                     };
                 }
                 return new SimpleResponse
@@ -559,14 +580,14 @@ namespace StyleONApi.AuthServices
             return new SimpleResponse
             {
                 IsSuccess = false,
-                 Message = $"User with {seller.Email} does not exist in our Databse"
+                Message = $"User with {seller.Email} does not exist in our Databse"
             };
-         
-          // Genreate Id, add seller to use flow
-          // Add to sellr table
+
+            // Genreate Id, add seller to use flow
+            // Add to sellr table
         }
 
-        public async  Task<SimpleResponse>FindAllUserInRole(string roleName)
+        public async Task<SimpleResponse> FindAllUserInRole(string roleName)
         {
 
             var roleExist = await _roleManager.RoleExistsAsync(roleName);
@@ -577,8 +598,8 @@ namespace StyleONApi.AuthServices
                 {
                     return new SimpleResponse
                     {
-                          IsSuccess = true,
-                          Message = $"No user with this {roleName} exist"
+                        IsSuccess = true,
+                        Message = $"No user with this {roleName} exist"
                     };
                 }
                 return new SimpleResponse
@@ -588,7 +609,7 @@ namespace StyleONApi.AuthServices
                     ObjectToReturn = userInRole
                 };
             }
-          
+
 
             return new SimpleResponse
             {

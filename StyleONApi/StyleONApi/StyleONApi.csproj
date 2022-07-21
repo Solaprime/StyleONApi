@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20220711105402_ExtendingIdentity.Designer.cs" />
     <Compile Remove="Migrations\20220719104813_AddingSellerFlow.cs" />
     <Compile Remove="Migrations\20220719104813_AddingSellerFlow.Designer.cs" />
+    <Compile Remove="Migrations\20220720112809_TestVibes.cs" />
+    <Compile Remove="Migrations\20220720112809_TestVibes.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
