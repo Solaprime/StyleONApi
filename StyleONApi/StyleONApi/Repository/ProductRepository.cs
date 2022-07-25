@@ -14,7 +14,7 @@ namespace StyleONApi.Repository
         private readonly StyleONContext _context;
         public ProductRepository( StyleONContext styleONContext)
         {
-            _context = styleONContext;
+            _context = styleONContext ?? throw new ArgumentNullException(nameof(StyleONContext));
         }
       
 
@@ -88,17 +88,120 @@ namespace StyleONApi.Repository
             
         }
 
-        public async  Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters)
+      
+
+        public IEnumerable<Product> GetAllProductNonAsync()
+        {
+            // the reason we created this method is because of 
+            // Our GetAllProduct return a Task<IEnumerable<Product>>
+            // and our get asynv method with the resource aparamter return a
+            //Task<IEnumerable<Product>> so we have clashing return type
+            return  _context.Products.ToList();
+        }
+
+
+        // Related to Seller
+        public  async Task<IEnumerable<Product>> GetAllProducts(Guid sellerId)
+        {
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+
+            return await _context.Products.Where(c => c.SellerId == sellerId)
+                .OrderBy(c => c.Name).ToListAsync();
+        }
+
+        public async  Task<Product> GetProduct(Guid sellerId, Guid productId)
+        {
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+            return await _context.Products.FirstOrDefaultAsync(a => a.ProductId == productId);
+        }
+
+        public  async Task CreateProduct(Guid sellerId, Product product)
+        {
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+            product.SellerId = sellerId;
+           await   _context.Products.AddAsync(product);
+        }
+
+        public async  Task<bool> SellerExist(Guid sellerId)
+        {
+            if (sellerId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+              return  _context.Sellers.Any(a => a.SellerId == sellerId);
+        }
+
+        public async  Task<IEnumerable<Product>> GetAllProductsInDatabase()
+        {
+            return await _context.Products.ToListAsync();
+        }
+
+        public async  Task<bool> Save()
+        {
+            return  ( await _context.SaveChangesAsync() >= 0);
+        }
+
+        public  async Task<IEnumerable<Product>> GetSearchingProduct(Guid sellerId, ProductResourceParameters productResourceParameters)
+        {
+            // check if seller is null
+            //check if seller exist
+            // retrieve List of product by seller
+            //Aplly the search parMETER
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+         
+                var sellersProduct = await GetAllProducts(sellerId);
+                if (productResourceParameters == null)
+                {
+                    throw new ArgumentNullException(nameof(productResourceParameters));
+                }
+                if (string.IsNullOrWhiteSpace(productResourceParameters.MainCategory)
+                    &&
+                    string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
+                {
+                    // return GetAllProductNonAsync();
+                    return sellersProduct;
+                }
+                 sellersProduct = _context.Products as IQueryable<Product>;
+
+                if (!string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
+                {
+                    var searchQuery = productResourceParameters.SearchQuery.Trim();
+                    sellersProduct = sellersProduct.Where(a => a.Name.Contains(searchQuery));
+                }
+
+                return sellersProduct;
+        }
+
+
+
+        public async Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters)
         {
             if (productResourceParameters == null)
             {
                 throw new ArgumentNullException(nameof(productResourceParameters));
             }
             if (string.IsNullOrWhiteSpace(productResourceParameters.MainCategory)
-                && 
+                &&
                 string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
             {
-               // return GetAllProductNonAsync();
+                // return GetAllProductNonAsync();
                 return await GetAllProducts();
             }
             var collectionOfProduct = _context.Products as IQueryable<Product>;
@@ -120,18 +223,7 @@ namespace StyleONApi.Repository
             //    collectionOfProduct = collectionOfProduct.Where(a=>mainCategory )
             //}
 
-            
-        }
 
-        public IEnumerable<Product> GetAllProductNonAsync()
-        {
-            // the reason we created this method is because of 
-            // Our GetAllProduct return a Task<IEnumerable<Product>>
-            // and our get asynv method with the resource aparamter return a
-            //Task<IEnumerable<Product>> so we have clashing return type
-            return  _context.Products.ToList();
         }
-
-      
     }
 }

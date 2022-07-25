@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using StyleONApi.Repository;
+using StyleONApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace StyleONApi.Controllers
         }
 
         [HttpPost()]
+
         public async Task<ActionResult<IEnumerable<ProductForCreationDto>>> CreatingMultipleProduct(IEnumerable<ProductForCreationDto> products)
         {
             var productsToCreate = _mapper.Map<IEnumerable<Product>>(products);
@@ -34,5 +36,47 @@ namespace StyleONApi.Controllers
             await _repository.CreateMultipleProduct(productsToCreate);
             return Ok(productsToCreate);
         }
+
+
+
+
+
+        /// Get all product  in Db based on filtering and Searching
+        /// </summary>
+        /// <param name="productResourceParameter"></param>
+        /// <returns></returns>
+        //[HttpGet()]
+        ////  [Authorize(Roles ="AppUser, AppSeller")]
+        //public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
+        //    [FromQuery] ProductResourceParameters productResourceParameter)
+        //{
+        //    var result = await _repository.GetAllProducts(productResourceParameter);
+        //    if (result == null)
+        //    {
+        //        return BadRequest("Sorry we cant find what you are Looking For ");
+        //    }
+        //     return Ok(_mapper.Map<IEnumerable<ProductDto>>(result));
+
+
+        //}
+        ////Searching general Product
+
+
+        [HttpGet()]
+        //  [Authorize(Roles ="AppUser, AppSeller")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetAllProduct(
+    [FromQuery] ProductResourceParameters productResourceParameter)
+        {
+            var result = await _repository.GetAllProducts(productResourceParameter);
+            if (result == null)
+            {
+                return BadRequest("Sorry we cant find what you are Looking For ");
+            }
+            return Ok(result);
+
+        }
+
+
     }
+
 }

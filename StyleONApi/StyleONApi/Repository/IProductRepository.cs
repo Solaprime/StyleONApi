@@ -13,12 +13,38 @@ namespace StyleONApi.Repository
         IEnumerable<Product> GetAllProductNonAsync();
         Task<Product> GetProduct(Guid productId);
         Task CreateProduct(Product product);
-        Task DeleteProduct(Product product);
+        
         Task CreateMultipleProduct(IEnumerable<Product> products);
         Task<bool> ProductExist(Guid productId);
-         void UpdateProduct(Product product);
-        Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
         
+        Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
+
+
+        // YOu will need to erase the above vode
+        Task<IEnumerable<Product>> GetAllProducts(Guid SellerId);
+        Task<Product> GetProduct(Guid SellerId,Guid productId);
+
+        Task CreateProduct(Guid SellerId,Product product);
+
+        Task<bool> SellerExist(Guid sellerId);
+
+        Task<IEnumerable<Product>> GetSearchingProduct(Guid sellerId, ProductResourceParameters productResourceParameters);
+        Task<IEnumerable<Product>> GetAllProductsInDatabase();
+        Task<bool> Save();
+
+
+
+        // Unchanged  product is void
+        Task DeleteProduct(Product product);
+        //Unchanged
+        void UpdateProduct(Product product);
+
+
+
+
+
+
+
 
 
         //  Check how multipe products are created
@@ -30,13 +56,7 @@ namespace StyleONApi.Repository
         //void UpdateProduct(Product product);
 
 
-        // Since all product must have a selller 
-        //Task<Product> GetProductById(Guid SellerId, Guid ProductId);
-        //Task<Product> CreateProduct(Guid SellerId, Product product);
 
-        // FOR sEARCHing and filtering 
-        //IEnumerable<Author> GetAuthors(string mainCategory, string searchQuery);
-        //IEnumerable<Author> GetAuthors(AuthorResourceParameters authorsResourceParameters);
 
 
     }
