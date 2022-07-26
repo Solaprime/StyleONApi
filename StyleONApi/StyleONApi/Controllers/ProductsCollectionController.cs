@@ -64,7 +64,7 @@ namespace StyleONApi.Controllers
 
         [HttpGet()]
         //  [Authorize(Roles ="AppUser, AppSeller")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProduct(
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
     [FromQuery] ProductResourceParameters productResourceParameter)
         {
             var result = await _repository.GetAllProducts(productResourceParameter);
@@ -72,11 +72,12 @@ namespace StyleONApi.Controllers
             {
                 return BadRequest("Sorry we cant find what you are Looking For ");
             }
-            return Ok(result);
+            //return Ok(result);
+            return Ok(_mapper.Map<IEnumerable<ProductDto>>(result));
 
         }
 
 
     }
 
-}
+} 

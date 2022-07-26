@@ -225,6 +225,34 @@ namespace StyleONApi.Controllers
         }
 
 
+         [HttpGet("WithSeller/{productId}")]
+        public async Task<ActionResult<ProductDto>> GetProductForSellerWithSellerInfor(Guid sellerId, Guid productId)
+        {
+
+            var ifSellerExist = await _repository.SellerExist(sellerId);
+
+            if (!ifSellerExist)
+            {
+                return NotFound();
+            }
+            var result = await _repository.GetProductWithSeller(sellerId, productId);
+            if (result == null)
+            {
+                return NotFound("We cant find the Product you are Looking for");
+            }
+            return Ok(_mapper.Map<ProductDto>(result));
+          //  return Ok(result);
+
+        }
+
+
+          // And the Include method In the repo classs
+          // Editing the ProductDto To include seller
+
+
+
+
+        
 
 
 

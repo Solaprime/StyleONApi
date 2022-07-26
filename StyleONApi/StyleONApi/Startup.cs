@@ -104,12 +104,12 @@ namespace StyleONApi
                 }).AddEntityFrameworkStores<StyleONContext>().AddDefaultTokenProviders();
 
 
-         
-            // Json excepetion stuff copied from stacKoVerflow
 
-                //services.AddControllersWithViews().AddNewtonsoftJson(options =>
-                //options.SerializerSettings.ReferenceLoopHandling
-                //= Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            // Json excepetion stuff copied from stacKoVerflow
+            //   AddControllersWithViews
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling
+                = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
                 //services.AddControllers().AddJsonOptions(options =>
                 //{

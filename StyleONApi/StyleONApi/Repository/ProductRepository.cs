@@ -133,6 +133,7 @@ namespace StyleONApi.Repository
                 throw new ArgumentNullException(nameof(product));
             }
             product.SellerId = sellerId;
+            // Try and check if u can pass A seller Info directly to product.Seller.
            await   _context.Products.AddAsync(product);
         }
 
@@ -157,10 +158,7 @@ namespace StyleONApi.Repository
 
         public  async Task<IEnumerable<Product>> GetSearchingProduct(Guid sellerId, ProductResourceParameters productResourceParameters)
         {
-            // check if seller is null
-            //check if seller exist
-            // retrieve List of product by seller
-            //Aplly the search parMETER
+           
             if (sellerId == null)
             {
                 throw new ArgumentNullException(nameof(sellerId));
@@ -225,5 +223,17 @@ namespace StyleONApi.Repository
 
 
         }
+
+        public  async Task<Product> GetProductWithSeller(Guid sellerId, Guid productId)
+        {
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+            // return await _context.Products.FirstOrDefaultAsync(a => a.ProductId == productId);
+
+            return await _context.Products.Include(s => s.Seller).FirstOrDefaultAsync();
+        }
+
     }
 }

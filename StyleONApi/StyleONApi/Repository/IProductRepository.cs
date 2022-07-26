@@ -33,6 +33,12 @@ namespace StyleONApi.Repository
         Task<bool> Save();
 
 
+        // Test to Include Seller
+
+
+        Task<Product> GetProductWithSeller(Guid sellerId, Guid productId);
+           
+
 
         // Unchanged  product is void
         Task DeleteProduct(Product product);

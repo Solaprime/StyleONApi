@@ -20,5 +20,8 @@ namespace StyleONApi.Model
         public List<ImageObject> Images { get; set; }
 
 
+       // public ProductWithSellerDto SellerInfo { get; set; }
+
+
     }
 }
