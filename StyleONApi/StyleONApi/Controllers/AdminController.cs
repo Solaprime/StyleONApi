@@ -14,6 +14,9 @@ namespace StyleONApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class AdminController : ControllerBase
     {
@@ -27,7 +30,11 @@ namespace StyleONApi.Controllers
             _userService = userService;
         }
 
-        // Deleting a user
+        /// <summary>
+        /// Deleting a User
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
 
         [HttpDelete("DeleteUser")]
         public async Task<IActionResult> DeleteUser([FromBody]string email)
@@ -50,6 +57,14 @@ namespace StyleONApi.Controllers
 
 
         // Bug to Fix
+        /// <summary>
+        /// Get all User in a role specified in the Body of the Reques
+        /// </summary>
+        /// <param name="rolename"></param>
+        /// <returns> A List of all User confirm the return typs</returns>
+        /// <response code ="200">Returns the List of User</response>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
 
         [HttpGet("GetAllUserInaRole")]
         public async Task<IActionResult> GetAllUserInaRole([FromBody] string rolename)
@@ -58,8 +73,14 @@ namespace StyleONApi.Controllers
             {
                 throw new ArgumentNullException(nameof(rolename));
             }
-            var userInRole = await _userService.FindAllUserInRole(rolename);
-            return Ok(userInRole);
+            var roleExist = await _roleManager.RoleExistsAsync(rolename);
+            if (roleExist)
+            {
+                var userInRole = await _userService.FindAllUserInRole(rolename);
+                return Ok(userInRole);
+            }
+            return NotFound("Role does not Exist ");
+         
 
         }
           

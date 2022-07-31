@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>StyleONApi</name>
+    </assembly>
+    <members>
+        <member name="M:StyleONApi.Controllers.AdminController.DeleteUser(System.String)">
+            <summary>
+            Deleting a User
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StyleONApi.Controllers.AdminController.GetAllUserInaRole(System.String)">
+            <summary>
+            Get all User in a role specified in the Body of the Reques
+            </summary>
+            <param name="rolename"></param>
+            <returns> A List of all User confirm the return typs</returns>
+            <response code ="200">Returns the List of User</response>
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.GetProductForSeller(System.Guid,System.Guid)">
+            <summary>
+            Get a single product for a seller
+            </summary>
+            <param name="sellerId"></param>
+            <param name="productId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.CreateProduct(System.Guid,StyleONApi.Model.ProductForCreationDto)">
+            <summary>
+            Creating a new Product
+            </summary>
+            <param name="product"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.DeleteProduct(System.Guid)">
+            <summary>
+            Delete a resource
+            </summary>
+            <param name="productId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.partiallyUpdateAProduct(System.Guid,System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{StyleONApi.Model.ProductForUpdate})">
+             <summary>
+             Partially Update a seller
+             </summary>
+             <param name="productId"></param>
+             <param name="patchDocument"></param>
+             <returns></returns>
+             <remarks>
+              Sample request(this request updated the product description)\
+             Patch /authors/id  \
+                [ \
+                      {  \
+                           "op": "replace".  \
+                           "path": "/description",  \
+                            "value": "new first name" \
+                      }   \
+                ]  \
+                    
+            
+             </remarks>
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.searchingproductforseller(System.Guid,StyleONApi.ResourceParameters.ProductResourceParameters)">
+            <summary>
+            Searching a list of product a seller has posted
+            </summary>
+            <param name="productId"></param>
+            <param name="patchDocument"></param>
+            <returns></returns>
+            
+        </member>
+        <member name="T:StyleONApi.Model.ApplicationUserDto">
+            <summary>
+            Outerfacing Contract for user
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.Id">
+            <summary>
+            Id of User
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.Country">
+            <summary>
+            County of User
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.City">
+            <summary>
+            City of User
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.FullName">
+            <summary>
+            FullName of User
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.UserName">
+            <summary>
+            UserName of User
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.Email">
+            <summary>
+            Email of User
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ApplicationUserDto.PhoneNumber">
+            <summary>
+            PhoneNumber of User
+            </summary>
+        </member>
+        <member name="T:StyleONApi.Model.ProductDto">
+            <summary>
+            Outerfacing For oUR Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.Name">
+            <summary>
+            Name of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.Price">
+            <summary>
+            Price of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.Description">
+            <summary>
+            Description of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.SlashPrice">
+            <summary>
+            SlashPrice of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.Reviews">
+            <summary>
+             Reviews of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.DatePosted">
+            <summary>
+            DateTime Product was Posted
+            </summary> 
+        </member>
+        <member name="P:StyleONApi.Model.ProductDto.Images">
+            <summary>
+            Images of Product Posted
+            </summary>
+        </member>
+        <member name="T:StyleONApi.Model.ProductForCreationDto">
+            <summary>
+            The OuterFacing needed to Create A product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.Name">
+            <summary>
+            the Name of the Product to Post
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.Price">
+            <summary>
+            Price of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.Description">
+            <summary>
+            short description of product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.SlashPrice">
+            <summary>
+            SlashPrice of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.Reviews">
+            <summary>
+            Review of Product
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.DatePosted">
+            <summary>
+            Represnt the DateTime product ws posted
+            </summary>
+        </member>
+        <member name="P:StyleONApi.Model.ProductForCreationDto.Images">
+            <summary>
+            a product will have Images
+            </summary>
+        </member>
+    </members>
+</doc>

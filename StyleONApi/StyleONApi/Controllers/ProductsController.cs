@@ -31,35 +31,7 @@ namespace StyleONApi.Controllers
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Get all Product for a single seller
-        /// </summary>
-        /// <param name="sellerId"></param>
-        /// <returns></returns>
-
-
-        //[HttpGet]
-        //// [Authorize(Roles = "AppUser, AppSeller")]
-        //public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProductForSeller(
-        //  Guid sellerId)
-        //{
-
-
-        //    var ifSellerExist = await _repository.SellerExist(sellerId);
-
-        //    if (!ifSellerExist)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var result = await _repository.GetAllProducts(sellerId);
-        //    if (result == null)
-        //    {
-        //        return BadRequest("Sorry we cant find what you are Looking For ");
-        //    }
-        //    return Ok(_mapper.Map<IEnumerable<ProductDto>>(result));
-
-        //}
-
+      
 
 
 
@@ -161,9 +133,21 @@ namespace StyleONApi.Controllers
         /// <param name="productId"></param>
         /// <param name="patchDocument"></param>
         /// <returns></returns>
-        /// 
+        /// <remarks>
+        ///  Sample request(this request updated the product description)\
+        /// Patch /authors/id  \
+        ///    [ \
+        ///          {  \
+        ///               "op": "replace".  \
+        ///               "path": "/description",  \
+        ///                "value": "new first name" \
+        ///          }   \
+        ///    ]  \
+        ///        
+        ///
+        /// </remarks>
 
-        [HttpPatch("{productId}")]
+    [HttpPatch("{productId}")]
         public async Task<ActionResult> partiallyUpdateAProduct(Guid sellerId, Guid productId,
           [FromBody] JsonPatchDocument<ProductForUpdate> patchDocument)
         {
@@ -203,20 +187,20 @@ namespace StyleONApi.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> searchingproductforseller(Guid sellerid, [FromQuery] ProductResourceParameters productresourceparameter)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> searchingproductforseller(Guid sellerId, [FromQuery] ProductResourceParameters productresourceparameter)
         {
 
             // check if seller exist 
             // call our searching method
             //we need to cast the list our searchingmethod returned
-            var ifsellerexist = await _repository.SellerExist(sellerid);
+            var ifsellerexist = await _repository.SellerExist(sellerId);
 
             if (!ifsellerexist)
             {
                 return NotFound();
             }
 
-            var searchedproduct = await _repository.GetSearchingProduct(sellerid, productresourceparameter);
+            var searchedproduct = await _repository.GetSearchingProduct(sellerId, productresourceparameter);
             if (searchedproduct == null)
             {
                 return BadRequest($"sorry we cant find what you are looking for in this store you can make a preordr with this seller or try other sellers");
@@ -226,7 +210,7 @@ namespace StyleONApi.Controllers
 
 
          [HttpGet("WithSeller/{productId}")]
-        public async Task<ActionResult<ProductDto>> GetProductForSellerWithSellerInfor(Guid sellerId, Guid productId)
+        public async Task<ActionResult<ProductDtoTest>> GetProductForSellerWithSellerInfor(Guid sellerId, Guid productId)
         {
 
             var ifSellerExist = await _repository.SellerExist(sellerId);
@@ -240,8 +224,8 @@ namespace StyleONApi.Controllers
             {
                 return NotFound("We cant find the Product you are Looking for");
             }
-            return Ok(_mapper.Map<ProductDto>(result));
-          //  return Ok(result);
+            return Ok(_mapper.Map<ProductDtoTest>(result));
+            //  return Ok(result);
 
         }
 
@@ -279,5 +263,14 @@ namespace StyleONApi.Controllers
         //Retrieving a prooduct tby Id
         //Deleting works
         // Patcginh Worrks
+
+
+          // THe abnoraml forward slash in pAtch is for Line BReak
+
     }
+
 }
+
+
+
+

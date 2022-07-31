@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace StyleONApi.Model
 {
-    public class ProductWithSellerDto
+    public class SellerDtoForProduct
     {
         public string StoreName { get; set; }
         public int NumberOfCompletedSales { get; set; }

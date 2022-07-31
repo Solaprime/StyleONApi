@@ -41,10 +41,7 @@ namespace StyleONApi.Controllers
 
 
 
-        /// Get all product  in Db based on filtering and Searching
-        /// </summary>
-        /// <param name="productResourceParameter"></param>
-        /// <returns></returns>
+        
         //[HttpGet()]
         ////  [Authorize(Roles ="AppUser, AppSeller")]
         //public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
