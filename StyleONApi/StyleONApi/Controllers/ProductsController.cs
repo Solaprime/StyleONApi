@@ -15,9 +15,10 @@ using System.Threading.Tasks;
 // since my repository class are in asynchronous pattern , My controller should also be In Asyn format to avoid some funny errors
 namespace StyleONApi.Controllers
 {
-    //[Route("api/[controller]")]
+   
     [Route("api/[controller]/{sellerId}/products")]
     [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, AppSeller")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -31,19 +32,7 @@ namespace StyleONApi.Controllers
             _mapper = mapper;
         }
 
-      
-
-
-
-
-
-
-
-
-
-
-
-
+     
         /// <summary>
         /// Get a single product for a seller
         /// </summary>
@@ -73,17 +62,15 @@ namespace StyleONApi.Controllers
 
 
 
-        /// <summary>
-        /// Creating a new Product
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-
-
-
-     
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="sellerId"></param>
+       /// <param name="product"></param>
+       /// <returns></returns>
         [HttpPost]
         // [Authorize(Roles ="AppSeller")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> CreateProduct(Guid sellerId, [FromBody] ProductForCreationDto product)
         {
             var ifSellerExist = await _repository.SellerExist(sellerId);
@@ -102,11 +89,11 @@ namespace StyleONApi.Controllers
             await _repository.Save();
 
 
-           
+
 
             // to test if the correct stuff was returrned
-
-            return Ok(productToCreate);
+            return Created("Vibes ", productToCreate);
+          //  return Ok(productToCreate);
         }
 
         /// <summary>
@@ -116,6 +103,7 @@ namespace StyleONApi.Controllers
         /// <returns></returns>
         [HttpDelete("{productId}")]
         //  [Authorize(Roles = "AppSeller")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> DeleteProduct(Guid productId)
         {
             var productToDelete = await _repository.GetProduct(productId);
@@ -131,6 +119,7 @@ namespace StyleONApi.Controllers
         /// Partially Update a seller
         /// </summary>
         /// <param name="productId"></param>
+        /// <param name="sellerId"></param>
         /// <param name="patchDocument"></param>
         /// <returns></returns>
         /// <remarks>
@@ -147,7 +136,8 @@ namespace StyleONApi.Controllers
         ///
         /// </remarks>
 
-    [HttpPatch("{productId}")]
+        [HttpPatch("{productId}")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Edit))]
         public async Task<ActionResult> partiallyUpdateAProduct(Guid sellerId, Guid productId,
           [FromBody] JsonPatchDocument<ProductForUpdate> patchDocument)
         {
@@ -176,23 +166,16 @@ namespace StyleONApi.Controllers
 
         }
 
-        /// <summary>
-        /// Searching a list of product a seller has posted
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="patchDocument"></param>
-        /// <returns></returns>
-        /// 
-        // Attach a route to this place
-
+       /// <summary>
+       ///   Searchong A list of product posted by seller with the given sellerId. The Resource Parameters contains search Info
+       /// </summary>
+       /// <param name="sellerId"></param>
+       /// <param name="productresourceparameter"></param>
+       /// <returns></returns>
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> searchingproductforseller(Guid sellerId, [FromQuery] ProductResourceParameters productresourceparameter)
         {
-
-            // check if seller exist 
-            // call our searching method
-            //we need to cast the list our searchingmethod returned
             var ifsellerexist = await _repository.SellerExist(sellerId);
 
             if (!ifsellerexist)
@@ -207,7 +190,12 @@ namespace StyleONApi.Controllers
             }
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(searchedproduct));
         }
-
+        /// <summary>
+        /// Test Method ot retereive seller Infor with Produict
+        /// </summary>
+        /// <param name="sellerId"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
 
          [HttpGet("WithSeller/{productId}")]
         public async Task<ActionResult<ProductDtoTest>> GetProductForSellerWithSellerInfor(Guid sellerId, Guid productId)
@@ -225,47 +213,8 @@ namespace StyleONApi.Controllers
                 return NotFound("We cant find the Product you are Looking for");
             }
             return Ok(_mapper.Map<ProductDtoTest>(result));
-            //  return Ok(result);
 
         }
-
-
-          // And the Include method In the repo classs
-          // Editing the ProductDto To include seller
-
-
-
-
-        
-
-
-
-        // Remove Unused Method 
-        // Refacto product returm to have sellers Details
-        // When Posting to a product the product u are mapped to always return seller has a null either change the Map and confirm for Kelvin
-
-
-
-
-
-        ///Refacto Product ResourceParameters one for all Produc one to search only wat seller has posted
-        ///
-
-
-
-
-        //Refacto get all product posted by a single seller throwing exception stuff
-
-
-
-
-        //Past a product to seller 
-        //Retrieving a prooduct tby Id
-        //Deleting works
-        // Patcginh Worrks
-
-
-          // THe abnoraml forward slash in pAtch is for Line BReak
 
     }
 

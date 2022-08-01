@@ -29,8 +29,9 @@
         </member>
         <member name="M:StyleONApi.Controllers.ProductsController.CreateProduct(System.Guid,StyleONApi.Model.ProductForCreationDto)">
             <summary>
-            Creating a new Product
+            
             </summary>
+            <param name="sellerId"></param>
             <param name="product"></param>
             <returns></returns>
         </member>
@@ -46,6 +47,7 @@
              Partially Update a seller
              </summary>
              <param name="productId"></param>
+             <param name="sellerId"></param>
              <param name="patchDocument"></param>
              <returns></returns>
              <remarks>
@@ -64,12 +66,19 @@
         </member>
         <member name="M:StyleONApi.Controllers.ProductsController.searchingproductforseller(System.Guid,StyleONApi.ResourceParameters.ProductResourceParameters)">
             <summary>
-            Searching a list of product a seller has posted
+              Searchong A list of product posted by seller with the given sellerId. The Resource Parameters contains search Info
             </summary>
-            <param name="productId"></param>
-            <param name="patchDocument"></param>
+            <param name="sellerId"></param>
+            <param name="productresourceparameter"></param>
             <returns></returns>
-            
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.GetProductForSellerWithSellerInfor(System.Guid,System.Guid)">
+            <summary>
+            Test Method ot retereive seller Infor with Produict
+            </summary>
+            <param name="sellerId"></param>
+            <param name="productId"></param>
+            <returns></returns>
         </member>
         <member name="T:StyleONApi.Model.ApplicationUserDto">
             <summary>

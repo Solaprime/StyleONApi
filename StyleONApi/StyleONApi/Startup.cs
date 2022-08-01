@@ -116,11 +116,7 @@ namespace StyleONApi
                 options.SerializerSettings.ReferenceLoopHandling
                 = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            //services.AddControllers().AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            //    options.JsonSerializerOptions.WriteIndented = true;
-            //});
+         
 
             // Swagger flow
             services.AddSwaggerGen(setupAction => 
