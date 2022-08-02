@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +29,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: ApiConventionType(typeof(DefaultApiConventions))]
+//[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 namespace StyleONApi
 {
     public class Startup
@@ -56,7 +59,7 @@ namespace StyleONApi
                     setupAction.SerializerSettings.ContractResolver
                       = new CamelCasePropertyNamesContractResolver();
                 });
-         
+
 
             // Our Authentication flow
             // the first part tells asp.net authentication flow to use the JWrBearerDefaults
@@ -91,7 +94,7 @@ namespace StyleONApi
 
                     jwt.SaveToken = true;
                     jwt.TokenValidationParameters = tokenValidationParams;
-                  
+
                 });
 
             // Adding some Identity Stuff
@@ -110,82 +113,124 @@ namespace StyleONApi
 
 
 
-            // Json excepetion stuff copied from stacKoVerflow
             //   AddControllersWithViews
-            services.AddControllers().AddNewtonsoftJson(options =>
+            services.AddControllers(
+                  setupAction =>
+                  {
+                      setupAction.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+                      setupAction.Filters.Add(
+                         new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+                      setupAction.Filters.Add(
+                         new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+                      setupAction.ReturnHttpNotAcceptable = true;
+                      var jsonOutputFormatter = setupAction.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>().FirstOrDefault();
+                      if (jsonOutputFormatter == null)
+                      {
+                          // Remove test/Json as it isnt aproved media types
+                          // Not working json at api level
+                          if (jsonOutputFormatter.SupportedMediaTypes.Contains("text/json"))
+                          {
+                              jsonOutputFormatter.SupportedMediaTypes.Remove("text/json");
+                          }
+                      }
+                  }
+                //Where mY Experiment ends
+
+                // Json excepetion stuff copied from stacKoVerflow  Prevents Json cyclic reference stuff
+                ).AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling
                 = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-         
-
-            // Swagger flow
-            services.AddSwaggerGen(setupAction => 
-            {
-                setupAction.SwaggerDoc("LibraryOpenApiSpecification",
-                    new Microsoft.OpenApi.Models.OpenApiInfo()
-                    {
-                        Title = "StyleON Api",
-                        Version = "1",
-                         Description = "Style on Api for E Commerce",
-
-
-                    });
-                // In the properties file we tick the Box to allow Xml Docu,netatio and
-                //the location to document and we erase to name of assenmbly
-                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
-                setupAction.IncludeXmlComments(xmlCommentsFullPath);
-            });
             services.Configure<ApiBehaviorOptions>(options =>
             {
-
-
                 options.InvalidModelStateResponseFactory = actionContext =>
                 {
                     var actionExecutingContext =
                      actionContext as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
 
-                // If there are modelstate erros and all Keys were correctly
-                // Found/Parsed we're dealing with validation errors
-                if (actionContext.ModelState.ErrorCount > 0
-                      && actionExecutingContext?.ActionArguments.Count == actionContext.ActionDescriptor.Parameters.Count)
+                    // If there are modelstate erros and all Keys were correctly
+                    // Found/Parsed we're dealing with validation errors
+                    if (actionContext.ModelState.ErrorCount > 0
+                          && actionExecutingContext?.ActionArguments.Count == actionContext.ActionDescriptor.Parameters.Count)
                     {
                         return new UnprocessableEntityObjectResult(actionContext.ModelState);
                     }
 
-                  // If one of the Keys wasnt correctly found/ couldnt be parsed
-                  // we are dealing with null/unparsable input
+                    // If one of the Keys wasnt correctly found/ couldnt be parsed
+                    // we are dealing with null/unparsable input
                     return new BadRequestObjectResult(actionContext.ModelState);
                 };
             });
-
-            services.AddMvc(setupAction =>
+            services.AddVersionedApiExplorer(setupAction =>
             {
-                //setupAction.Filters.Add(
-                //    new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
-                //setupAction.Filters.Add(
-                //   new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-                //setupAction.Filters.Add(
-                //   new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+                setupAction.GroupNameFormat = "'v'VV";
+            });
 
-                setupAction.ReturnHttpNotAcceptable = true;
-                var jsonOutPutForMatter = setupAction.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>().FirstOrDefault();
-                if (jsonOutPutForMatter == null)
+
+
+            // Versioning Vibes
+
+            services.AddApiVersioning(setupAction =>
+            {
+                setupAction.AssumeDefaultVersionWhenUnspecified = true;
+                setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+                setupAction.ReportApiVersions = true;
+            });
+            var apiVersioningDescriptionProvider = 
+                services.BuildServiceProvider().
+                  GetService<IApiVersionDescriptionProvider>();
+
+
+            // Swagger flow
+            services.AddSwaggerGen(setupAction =>
+            {
+                foreach (var description in apiVersioningDescriptionProvider.ApiVersionDescriptions)
                 {
-                    // Remove text/Json as it isnt the approved media types
-                    //Not working with Json at Api level
-                    if (jsonOutPutForMatter.SupportedMediaTypes.Contains("text/json"))
+                     setupAction.SwaggerDoc($"LibraryOpenApiSpecification{description.GroupName}",
+               new Microsoft.OpenApi.Models.OpenApiInfo()
+               {
+                   Title = "StyleON Api",
+                   Version = description.ApiVersion.ToString(),
+                   Description = "Style on Api for E Commerce",
+
+
+               });
+                    setupAction.DocInclusionPredicate((documentName, apiDescription) =>
                     {
-                        jsonOutPutForMatter.SupportedMediaTypes.Remove("text/json");
-                    }
-                   
+                        var actionApiVersionModel = apiDescription.ActionDescriptor
+                         .GetApiVersionModel(ApiVersionMapping.Explicit | ApiVersionMapping.Implicit);
+                        if (actionApiVersionModel == null)
+                        {
+                            return true;
+                        }
+                        if (actionApiVersionModel.DeclaredApiVersions.Any())
+                        {
+                            return actionApiVersionModel.DeclaredApiVersions.Any(
+                                v => $"LibraryOpenApiSpecificationv{v.ToString()}" == documentName);
+                        }
+                        return actionApiVersionModel.ImplementedApiVersions.Any(v =>
+                           $"LibraryOpenApiSpecification{v.ToString()}" == documentName);
+                    });
+                    // In the properties file we tick the Box to allow Xml Docu,netatio and
+                    //the location to document and we erase to name of assenmbly
+                  
                 }
-            }).SetCompatibilityVersion(CompatibilityVersion.Latest);
-               
+                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+                setupAction.IncludeXmlComments(xmlCommentsFullPath);
+
+            });
+
+
+           
+
+          
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            IApiVersionDescriptionProvider apiVersioningDescriptionProvider)
         {
             if (env.IsDevelopment())
             {
@@ -199,9 +244,15 @@ namespace StyleONApi
             // Swagger Ui flow 
             app.UseSwaggerUI(setupAction =>
             {
-                setupAction.SwaggerEndpoint("/swagger/LibraryOpenApiSpecification/swagger.json",
-                    "StyleOn Api");
-              //  setupAction.RoutePrefix = "";
+                //setupAction.SwaggerEndpoint("/swagger/LibraryOpenApiSpecification/swagger.json",
+                //    "StyleOn Api");
+                ////  setupAction.RoutePrefix = "";
+                foreach (var description in apiVersioningDescriptionProvider.ApiVersionDescriptions)
+                {
+                    setupAction.SwaggerEndpoint($"/swagger/" +
+                     $"LibraryOpenApiSpecification{description.GroupName}/swagger.json",
+                     description.GroupName.ToUpperInvariant());
+                }
             });
             app.UseRouting();
             app.UseAuthentication();

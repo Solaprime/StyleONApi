@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc; 
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using StyleONApi.Repository;
@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 // since my repository class are in asynchronous pattern , My controller should also be In Asyn format to avoid some funny errors
 namespace StyleONApi.Controllers
 {
-   
-    [Route("api/[controller]/{sellerId}/products")]
+   [Produces("application/json", "application/xml")]
+    [Route("api/v{version:apiVersion}/[controller]/{sellerId}/products")]
     [ApiController]
-    [ApiConventionType(typeof(DefaultApiConventions))]
+  //  [ApiConventionType(typeof(DefaultApiConventions))]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, AppSeller")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -33,32 +33,7 @@ namespace StyleONApi.Controllers
         }
 
      
-        /// <summary>
-        /// Get a single product for a seller
-        /// </summary>
-        /// <param name="sellerId"></param>
-        /// <param name="productId"></param>
-        /// <returns></returns>
-
-        [HttpGet("{productId}", Name = "GetProduct")]
-        //    [Authorize(Roles = "AppUser, AppSeller")]
-        public async Task<ActionResult<ProductDto>> GetProductForSeller(Guid sellerId, Guid productId)
-        {
-
-            var ifSellerExist = await _repository.SellerExist(sellerId);
-
-            if (!ifSellerExist)
-            {
-                return NotFound();
-            }
-            var result = await _repository.GetProduct(sellerId, productId);
-            if (result == null)
-            {
-                return NotFound("We cant find the Product you are Looking for");
-            }
-            return Ok(_mapper.Map<ProductDto>(result));
-
-        }
+       
 
 
 
@@ -69,8 +44,9 @@ namespace StyleONApi.Controllers
        /// <param name="product"></param>
        /// <returns></returns>
         [HttpPost]
+        [Consumes("application/json")]
         // [Authorize(Roles ="AppSeller")]
-        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
+       // [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> CreateProduct(Guid sellerId, [FromBody] ProductForCreationDto product)
         {
             var ifSellerExist = await _repository.SellerExist(sellerId);
@@ -103,7 +79,7 @@ namespace StyleONApi.Controllers
         /// <returns></returns>
         [HttpDelete("{productId}")]
         //  [Authorize(Roles = "AppSeller")]
-        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
+      //  [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> DeleteProduct(Guid productId)
         {
             var productToDelete = await _repository.GetProduct(productId);
@@ -137,7 +113,7 @@ namespace StyleONApi.Controllers
         /// </remarks>
 
         [HttpPatch("{productId}")]
-        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Edit))]
+       // [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Edit))]
         public async Task<ActionResult> partiallyUpdateAProduct(Guid sellerId, Guid productId,
           [FromBody] JsonPatchDocument<ProductForUpdate> patchDocument)
         {
@@ -195,8 +171,9 @@ namespace StyleONApi.Controllers
         /// </summary>
         /// <param name="sellerId"></param>
         /// <param name="productId"></param>
-        /// <returns></returns>
-
+        /// <returns> An actionresult of ProductDtoTest </returns>
+        /// <response code = "200">Returns the Book</response>
+      
          [HttpGet("WithSeller/{productId}")]
         public async Task<ActionResult<ProductDtoTest>> GetProductForSellerWithSellerInfor(Guid sellerId, Guid productId)
         {
@@ -216,6 +193,33 @@ namespace StyleONApi.Controllers
 
         }
 
+        /// <summary>
+        /// Get a single product for a seller
+        /// </summary>
+        /// <param name="sellerId"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+
+        [HttpGet("{productId}", Name = "GetProduct")]
+        //    [Authorize(Roles = "AppUser, AppSeller")]
+        public async Task<ActionResult<ProductDto>> GetProductForSeller(Guid sellerId, Guid productId)
+        {
+
+            var ifSellerExist = await _repository.SellerExist(sellerId);
+
+            if (!ifSellerExist)
+            {
+                return NotFound();
+            }
+            var result = await _repository.GetProduct(sellerId, productId);
+            if (result == null)
+            {
+                return NotFound("We cant find the Product you are Looking for");
+            }
+            return Ok(_mapper.Map<ProductDto>(result));
+
+        }
+
     }
 
 }
@@ -223,3 +227,4 @@ namespace StyleONApi.Controllers
 
 
 
+// You are to Mix Attribute Response types with the one in Startu[ to match your use case

@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace StyleONApi.Controllers
 {
-    [Route("api/[controller]")]
+    // [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {

@@ -19,14 +19,6 @@
             <returns> A List of all User confirm the return typs</returns>
             <response code ="200">Returns the List of User</response>
         </member>
-        <member name="M:StyleONApi.Controllers.ProductsController.GetProductForSeller(System.Guid,System.Guid)">
-            <summary>
-            Get a single product for a seller
-            </summary>
-            <param name="sellerId"></param>
-            <param name="productId"></param>
-            <returns></returns>
-        </member>
         <member name="M:StyleONApi.Controllers.ProductsController.CreateProduct(System.Guid,StyleONApi.Model.ProductForCreationDto)">
             <summary>
             
@@ -75,6 +67,15 @@
         <member name="M:StyleONApi.Controllers.ProductsController.GetProductForSellerWithSellerInfor(System.Guid,System.Guid)">
             <summary>
             Test Method ot retereive seller Infor with Produict
+            </summary>
+            <param name="sellerId"></param>
+            <param name="productId"></param>
+            <returns> An actionresult of ProductDtoTest </returns>
+            <response code = "200">Returns the Book</response>
+        </member>
+        <member name="M:StyleONApi.Controllers.ProductsController.GetProductForSeller(System.Guid,System.Guid)">
+            <summary>
+            Get a single product for a seller
             </summary>
             <param name="sellerId"></param>
             <param name="productId"></param>
