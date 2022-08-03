@@ -9,13 +9,17 @@ namespace StyleONApi.Repository
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllProducts();
-        IEnumerable<Product> GetAllProductNonAsync();
-        Task<Product> GetProduct(Guid productId);
-        Task CreateProduct(Product product);
-        
-        Task CreateMultipleProduct(IEnumerable<Product> products);
-        Task<bool> ProductExist(Guid productId);
+        //Task<IEnumerable<Product>> GetAllProducts();
+        //Task<Product> GetProduct(Guid productId);
+        //Task CreateProduct(Product product);
+
+        //Task CreateMultipleProduct(IEnumerable<Product> products);
+        //Task<bool> ProductExist(Guid productId);
+
+
+        Task<IEnumerable<Product>> GetAllProductsInDatabase();
+
+
         
         Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
 
@@ -29,41 +33,28 @@ namespace StyleONApi.Repository
         Task<bool> SellerExist(Guid sellerId);
 
         Task<IEnumerable<Product>> GetSearchingProduct(Guid sellerId, ProductResourceParameters productResourceParameters);
-        Task<IEnumerable<Product>> GetAllProductsInDatabase();
+       
         Task<bool> Save();
-
-
-        // Test to Include Seller
-
-
         Task<Product> GetProductWithSeller(Guid sellerId, Guid productId);
-           
 
+        Task<IEnumerable<Product>> GetProductCollection(Guid sellerId, IEnumerable<Guid> productId);
 
-        // Unchanged  product is void
-        Task DeleteProduct(Product product);
-        //Unchanged
+        
+
+        
+        //// Unchanged  product is void
+        //Task DeleteProduct(Product product);
+        ////Unchanged
         void UpdateProduct(Product product);
 
 
+        // Collection of product vibes
+        // Delete Product
+        // UPdate Product  Check
+        // the value returned when posting isnt returning SellerInfo. THe Dto mapping for productTOcReate, Entities and ProductTest
 
 
-
-
-
-
-
-        //  Check how multipe products are created
-        //Task<IEnumerable<Product>> CreateMultipleProduct(IEnumerable<Product> products);
-
-
-
-        // check our kelvi docks implmented Update
-        //void UpdateProduct(Product product);
-
-
-
-
+       
 
     }
 }

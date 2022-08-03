@@ -118,6 +118,7 @@ namespace StyleONApi
                   setupAction =>
                   {
                       setupAction.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+                      setupAction.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
                       setupAction.Filters.Add(
                          new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
                       setupAction.Filters.Add(

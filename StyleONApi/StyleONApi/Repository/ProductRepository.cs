@@ -18,23 +18,23 @@ namespace StyleONApi.Repository
         }
       
 
-        public  async Task CreateProduct(Product product)
-        {
-            if (product ==null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
-            product.ProductId = new Guid();
-            await _context.Products.AddAsync(product);
-            await  _context.SaveChangesAsync();
-        }
+        //public  async Task CreateProduct(Product product)
+        //{
+        //    if (product ==null)
+        //    {
+        //        throw new ArgumentNullException(nameof(product));
+        //    }
+        //    product.ProductId = new Guid();
+        //    await _context.Products.AddAsync(product);
+        //    await  _context.SaveChangesAsync();
+        //}
 
       
 
-        public async  Task<IEnumerable<Product>> GetAllProducts()
-        {
-            return await _context.Products.ToListAsync();
-        }
+        //public async  Task<IEnumerable<Product>> GetAllProducts()
+        //{
+        //    return await _context.Products.ToListAsync();
+        //}
 
         public  async Task<Product> GetProduct(Guid productId)
         {
@@ -52,53 +52,28 @@ namespace StyleONApi.Repository
             await _context.SaveChangesAsync();
         }
 
-        public  async Task CreateMultipleProduct(IEnumerable<Product> products)
-        {
-            if (products == null)
-            {
-                throw new ArgumentNullException(nameof(products));
-            }
-            foreach (var item in products)
-            {
-                item.ProductId = new Guid();
-                await _context.Products.AddAsync(item);
-                
-            }
-            await _context.SaveChangesAsync();
-        }
+      
 
-        public async Task<bool> ProductExist(Guid productId)
-        {
-            if (productId == null)
-            {
-                throw new ArgumentNullException(nameof(productId));
-            }
-            var productToFind = await _context.Products.Where(c => c.ProductId == productId).FirstOrDefaultAsync();
-            if (productToFind == null)
-            {
-                return false;
-            }
-            return true;
-        }
+        //public async Task<bool> ProductExist(Guid productId)
+        //{
+        //    if (productId == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(productId));
+        //    }
+        //    var productToFind = await _context.Products.Where(c => c.ProductId == productId).FirstOrDefaultAsync();
+        //    if (productToFind == null)
+        //    {
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         public void UpdateProduct(Product product)
         {
             // No implementations
             _context.SaveChanges();
-            
+
         }
-
-      
-
-        public IEnumerable<Product> GetAllProductNonAsync()
-        {
-            // the reason we created this method is because of 
-            // Our GetAllProduct return a Task<IEnumerable<Product>>
-            // and our get asynv method with the resource aparamter return a
-            //Task<IEnumerable<Product>> so we have clashing return type
-            return  _context.Products.ToList();
-        }
-
 
         // Related to Seller
         public  async Task<IEnumerable<Product>> GetAllProducts(Guid sellerId)
@@ -146,7 +121,7 @@ namespace StyleONApi.Repository
               return  _context.Sellers.Any(a => a.SellerId == sellerId);
         }
 
-        public async  Task<IEnumerable<Product>> GetAllProductsInDatabase()
+        public async Task<IEnumerable<Product>> GetAllProductsInDatabase()
         {
             return await _context.Products.ToListAsync();
         }
@@ -200,7 +175,7 @@ namespace StyleONApi.Repository
                 string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
             {
                 // return GetAllProductNonAsync();
-                return await GetAllProducts();
+                return await GetAllProductsInDatabase();
             }
             var collectionOfProduct = _context.Products as IQueryable<Product>;
 
@@ -232,8 +207,20 @@ namespace StyleONApi.Repository
             }
             // return await _context.Products.FirstOrDefaultAsync(a => a.ProductId == productId);
 
-            return await _context.Products.Include(s => s.Seller).FirstOrDefaultAsync();
+            return await _context.Products.Include(s => s.Seller).FirstOrDefaultAsync(a => a.ProductId == productId);
         }
 
+        public  async Task<IEnumerable<Product>> GetProductCollection(Guid sellerId, IEnumerable<Guid> productId)
+        {
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+            if (productId == null)
+            {
+                throw new ArgumentNullException(nameof(productId));
+            }
+            return  await _context.Products.Where(a => productId.Contains(a.ProductId)).ToListAsync();
+        }
     }
 }

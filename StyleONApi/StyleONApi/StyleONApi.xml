@@ -27,13 +27,6 @@
             <param name="product"></param>
             <returns></returns>
         </member>
-        <member name="M:StyleONApi.Controllers.ProductsController.DeleteProduct(System.Guid)">
-            <summary>
-            Delete a resource
-            </summary>
-            <param name="productId"></param>
-            <returns></returns>
-        </member>
         <member name="M:StyleONApi.Controllers.ProductsController.partiallyUpdateAProduct(System.Guid,System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{StyleONApi.Model.ProductForUpdate})">
              <summary>
              Partially Update a seller
@@ -43,15 +36,15 @@
              <param name="patchDocument"></param>
              <returns></returns>
              <remarks>
-              Sample request(this request updated the product description)\
-             Patch /authors/id  \
-                [ \
-                      {  \
-                           "op": "replace".  \
-                           "path": "/description",  \
-                            "value": "new first name" \
-                      }   \
-                ]  \
+              Sample request(this request updated the  **product description** )
+             Patch /authors/id  
+                [ 
+                      {  
+                           "op": "replace".  
+                           "path": "/description",  
+                            "value": "new first name" 
+                      }   
+                ]  
                     
             
              </remarks>
@@ -72,14 +65,6 @@
             <param name="productId"></param>
             <returns> An actionresult of ProductDtoTest </returns>
             <response code = "200">Returns the Book</response>
-        </member>
-        <member name="M:StyleONApi.Controllers.ProductsController.GetProductForSeller(System.Guid,System.Guid)">
-            <summary>
-            Get a single product for a seller
-            </summary>
-            <param name="sellerId"></param>
-            <param name="productId"></param>
-            <returns></returns>
         </member>
         <member name="T:StyleONApi.Model.ApplicationUserDto">
             <summary>
