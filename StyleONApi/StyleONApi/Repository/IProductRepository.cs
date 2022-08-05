@@ -39,9 +39,10 @@ namespace StyleONApi.Repository
 
         Task<IEnumerable<Product>> GetProductCollection(Guid sellerId, IEnumerable<Guid> productId);
 
+        Task DeleteProduct(Product product);
         
 
-        
+
         //// Unchanged  product is void
         //Task DeleteProduct(Product product);
         ////Unchanged

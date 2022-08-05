@@ -170,6 +170,24 @@ namespace StyleONApi.Controllers
             return Ok(_mapper.Map<ProductDtoTest>(result));
 
         }
+        [HttpDelete("{productId}")]
+        public async  Task<ActionResult> DeleteProductForSeller(Guid sellerId, Guid productId)
+        {
+            // Check id Seller Exist 
+            // you get product 
+            //YOu Delet Course
+            if (await _repository.SellerExist(sellerId))
+            {
+                return NotFound();
+            }
+            var productForSeller = await _repository.GetProduct(sellerId, productId);
+            if (productForSeller == null)
+            {
+                return NotFound();
+            }
+            await  _repository.DeleteProduct(productForSeller);
+            return NoContent();
+        }
     }
 
 }
@@ -178,3 +196,4 @@ namespace StyleONApi.Controllers
 
 
 // You are to Mix Attribute Response types with the one in Startu[ to match your use case
+// Test delete a product and deleting a sellecte

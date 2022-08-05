@@ -12,5 +12,7 @@ namespace StyleONApi.Repository
         Task<IEnumerable<Seller>> GetSellers();
         Task<IEnumerable<Seller>> GetSellers(SelllersResourceParameters resourceParameters);
           Task<bool>  CheckIfSellershasnotUpdated(Seller seller);
+        Task<Seller> GetSeller(Guid sellerId);
+        Task DeleteSeller(Seller seller);
     }
 }

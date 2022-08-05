@@ -63,5 +63,24 @@ namespace StyleONApi.Repository
             return true;
 
         }
+
+        public async Task<Seller> GetSeller(Guid sellerId)
+        {
+
+            if (sellerId == null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+
+            // Find seller
+           return await _context.Sellers.Where(c => c.SellerId == sellerId).FirstOrDefaultAsync();
+
+
+        }
+        public async Task DeleteSeller(Seller seller)
+        {
+            _context.Sellers.Remove(seller);
+            await _context.SaveChangesAsync();
+        }
     }
 }
