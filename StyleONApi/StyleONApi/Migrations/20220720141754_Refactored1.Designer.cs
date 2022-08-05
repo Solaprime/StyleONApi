@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StyleONApi.Context;
 
 namespace StyleONApi.Migrations
 {
     [DbContext(typeof(StyleONContext))]
-    partial class StyleONContextModelSnapshot : ModelSnapshot
+    [Migration("20220720141754_Refactored1")]
+    partial class Refactored1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,7 +277,7 @@ namespace StyleONApi.Migrations
                     b.Property<double>("Reviews")
                         .HasColumnType("float");
 
-                    b.Property<Guid>("SellerId")
+                    b.Property<Guid?>("SellerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("SlashPrice")
@@ -417,11 +419,9 @@ namespace StyleONApi.Migrations
 
             modelBuilder.Entity("StyleONApi.Entities.Product", b =>
                 {
-                    b.HasOne("StyleONApi.Entities.Seller", "Seller")
+                    b.HasOne("StyleONApi.Entities.Seller", null)
                         .WithMany("Products")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SellerId");
                 });
 
             modelBuilder.Entity("StyleONApi.Entities.RefreshToken", b =>

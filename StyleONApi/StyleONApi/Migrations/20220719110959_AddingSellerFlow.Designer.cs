@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StyleONApi.Context;
 
 namespace StyleONApi.Migrations
 {
     [DbContext(typeof(StyleONContext))]
-    partial class StyleONContextModelSnapshot : ModelSnapshot
+    [Migration("20220719110959_AddingSellerFlow")]
+    partial class AddingSellerFlow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,7 +277,7 @@ namespace StyleONApi.Migrations
                     b.Property<double>("Reviews")
                         .HasColumnType("float");
 
-                    b.Property<Guid>("SellerId")
+                    b.Property<Guid?>("SellerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("SlashPrice")
@@ -332,10 +334,6 @@ namespace StyleONApi.Migrations
                     b.Property<DateTime>("DateRegistered")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("NumberOfCompletedSales")
                         .HasColumnType("int");
 
@@ -343,9 +341,6 @@ namespace StyleONApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
-
-                    b.Property<double>("StoreReview")
-                        .HasColumnType("float");
 
                     b.Property<string>("UserFlowId")
                         .HasColumnType("nvarchar(450)");
@@ -417,11 +412,9 @@ namespace StyleONApi.Migrations
 
             modelBuilder.Entity("StyleONApi.Entities.Product", b =>
                 {
-                    b.HasOne("StyleONApi.Entities.Seller", "Seller")
+                    b.HasOne("StyleONApi.Entities.Seller", null)
                         .WithMany("Products")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SellerId");
                 });
 
             modelBuilder.Entity("StyleONApi.Entities.RefreshToken", b =>

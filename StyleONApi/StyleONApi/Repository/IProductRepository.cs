@@ -9,34 +9,53 @@ namespace StyleONApi.Repository
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllProducts();
-        IEnumerable<Product> GetAllProductNonAsync();
-        Task<Product> GetProduct(Guid productId);
-        Task CreateProduct(Product product);
-        Task DeleteProduct(Product product);
-        Task CreateMultipleProduct(IEnumerable<Product> products);
-        Task<bool> ProductExist(Guid productId);
-         void UpdateProduct(Product product);
+        //Task<IEnumerable<Product>> GetAllProducts();
+        //Task<Product> GetProduct(Guid productId);
+        //Task CreateProduct(Product product);
+
+        //Task CreateMultipleProduct(IEnumerable<Product> products);
+        //Task<bool> ProductExist(Guid productId);
+
+
+        Task<IEnumerable<Product>> GetAllProductsInDatabase();
+
+
+        
         Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
 
 
-        //  Check how multipe products are created
-        //Task<IEnumerable<Product>> CreateMultipleProduct(IEnumerable<Product> products);
+        // YOu will need to erase the above vode
+        Task<IEnumerable<Product>> GetAllProducts(Guid SellerId);
+        Task<Product> GetProduct(Guid SellerId,Guid productId);
+
+        Task CreateProduct(Guid SellerId,Product product);
+
+        Task<bool> SellerExist(Guid sellerId);
+
+        Task<IEnumerable<Product>> GetSearchingProduct(Guid sellerId, ProductResourceParameters productResourceParameters);
+       
+        Task<bool> Save();
+        Task<Product> GetProductWithSeller(Guid sellerId, Guid productId);
+
+        Task<IEnumerable<Product>> GetProductCollection(Guid sellerId, IEnumerable<Guid> productId);
+
+        Task DeleteProduct(Product product);
+        
 
 
+        //// Unchanged  product is void
+        //Task DeleteProduct(Product product);
+        ////Unchanged
+        void UpdateProduct(Product product);
 
-        // check our kelvi docks implmented Update
-        //void UpdateProduct(Product product);
+
+        // Collection of product vibes
+        // Delete Product
+        // UPdate Product  Check
+        // the value returned when posting isnt returning SellerInfo. THe Dto mapping for productTOcReate, Entities and ProductTest
 
 
-        // Since all product must have a selller 
-        //Task<Product> GetProductById(Guid SellerId, Guid ProductId);
-        //Task<Product> CreateProduct(Guid SellerId, Product product);
-
-        // FOR sEARCHing and filtering 
-        //IEnumerable<Author> GetAuthors(string mainCategory, string searchQuery);
-        //IEnumerable<Author> GetAuthors(AuthorResourceParameters authorsResourceParameters);
-
+       
 
     }
 }
