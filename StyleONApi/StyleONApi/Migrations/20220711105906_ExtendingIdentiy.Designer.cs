@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StyleONApi.Context;
 
 namespace StyleONApi.Migrations
 {
     [DbContext(typeof(StyleONContext))]
-    partial class StyleONContextModelSnapshot : ModelSnapshot
+    [Migration("20220711105906_ExtendingIdentiy")]
+    partial class ExtendingIdentiy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,7 +265,6 @@ namespace StyleONApi.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -276,105 +277,12 @@ namespace StyleONApi.Migrations
                     b.Property<double>("Reviews")
                         .HasColumnType("float");
 
-                    b.Property<Guid>("SellerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<double>("SlashPrice")
                         .HasColumnType("float");
 
                     b.HasKey("ProductId");
 
-                    b.HasIndex("SellerId");
-
                     b.ToTable("Products");
-                });
-
-<<<<<<< HEAD
-            modelBuilder.Entity("StyleONApi.Entities.Seller", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Sellers");
-=======
-            modelBuilder.Entity("StyleONApi.Entities.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("AddedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRevorked")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JwtId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("StyleONApi.Entities.Seller", b =>
-                {
-                    b.Property<Guid>("SellerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("DateRegistered")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NumberOfCompletedSales")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StoreName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<double>("StoreReview")
-                        .HasColumnType("float");
-
-                    b.Property<string>("UserFlowId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("SellerId");
-
-                    b.HasIndex("UserFlowId");
-
-                    b.ToTable("Sellers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -426,7 +334,6 @@ namespace StyleONApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
->>>>>>> SwaggerFlowController
                 });
 
             modelBuilder.Entity("StyleONApi.Entities.ImageObject", b =>
@@ -435,32 +342,6 @@ namespace StyleONApi.Migrations
                         .WithMany("Images")
                         .HasForeignKey("ProductId");
                 });
-
-            modelBuilder.Entity("StyleONApi.Entities.Product", b =>
-                {
-                    b.HasOne("StyleONApi.Entities.Seller", "Seller")
-                        .WithMany("Products")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-<<<<<<< HEAD
-=======
-
-            modelBuilder.Entity("StyleONApi.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("StyleONApi.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("StyleONApi.Entities.Seller", b =>
-                {
-                    b.HasOne("StyleONApi.Entities.ApplicationUser", "UserFlow")
-                        .WithMany()
-                        .HasForeignKey("UserFlowId");
-                });
->>>>>>> SwaggerFlowController
 #pragma warning restore 612, 618
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StyleONApi.Entities;
 using System;
 using System.Collections.Generic;
@@ -7,22 +8,27 @@ using System.Threading.Tasks;
 
 namespace StyleONApi.Context
 {
-    public class StyleONContext  : DbContext
+    public class StyleONContext  : IdentityDbContext<ApplicationUser>
     {
         public StyleONContext(DbContextOptions options) : base(options)
         {
                      
         }
         public DbSet<Product> Products { get; set; }
-     
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Seller> Sellers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-<<<<<<< HEAD
-         
-=======
 
-            
->>>>>>> 0e8e96d9364b6b5479621b2c91a2f3a1cbf646c6
+            base.OnModelCreating(modelBuilder);
+
         }
     }
 }
+
+
+// When u inherifted from IdentityDbContext,  i encounter a  
+//"The entity type 'IdentityUserLogin<string>' requires a primary key to be defined [duplicate]" error i solved it by adding 
+
+
+// base.OnModelCreating(modelBuilder);

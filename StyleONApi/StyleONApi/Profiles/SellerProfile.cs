@@ -12,6 +12,7 @@ namespace StyleONApi.Profiles
     {
         public SellerProfile()
         {
+<<<<<<< HEAD
             CreateMap<Seller, SellerDto>().
                 ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
 
@@ -19,6 +20,16 @@ namespace StyleONApi.Profiles
             //One of them is for Patch
             CreateMap<SellerForUpdate, Seller>();
             CreateMap<Seller, SellerForUpdate>();
+=======
+           
+            CreateMap<SellerForUpdateDto, Seller>();
+            CreateMap<Seller, SellerDto>();
+            CreateMap<Seller, SellerForUpdateDto>();
+            CreateMap<Seller, SellerDtoForProduct>();
+          //  CreateMap<ProductWithSellerDto, Seller>();
+
+           // CreateMap<SellerDto, Seller>();
+>>>>>>> SwaggerFlowController
         }
     }
 }

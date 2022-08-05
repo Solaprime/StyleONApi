@@ -23,6 +23,11 @@ namespace StyleONApi.Profiles
             // one of them is for Patch sake
             CreateMap<Product, ProductForUpdate>();
 
+
+            /// Flow to test ProductDto Test
+            CreateMap<Product, ProductDtoTest>().
+                ForMember(dest => dest.sellerInfo, sour => sour.MapFrom(s => s.Seller));
+
         }
     }
 }

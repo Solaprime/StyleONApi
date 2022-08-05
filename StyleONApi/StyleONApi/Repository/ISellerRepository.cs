@@ -7,20 +7,13 @@ using System.Threading.Tasks;
 
 namespace StyleONApi.Repository
 {
-   public interface ISellerRepository
+   public  interface ISellerRepository
     {
-        //CRUD
-        //IO operation
-        Task<IEnumerable<Seller>> GetAllSellerAsync();
-        Task<Seller> GetSingleSellerAsync(Guid SellerId);
-        bool SaveChanges();
-        void UpdateSeller(Seller seller);
-        void DeleteSeller(Seller seller);
-        Task CreateMultipeSeller(IEnumerable<Seller> sellers);
-        Task CreateSeller(Seller seller);
-        Task<bool> SellerExist(Guid SellerId);
-        Task<IEnumerable<Seller>> GetSellers(SellerResourceParameters resourceParameters);
-
+        Task<IEnumerable<Seller>> GetSellers();
+        Task<IEnumerable<Seller>> GetSellers(SelllersResourceParameters resourceParameters);
+          Task<bool>  CheckIfSellershasnotUpdated(Seller seller);
+        Task<Seller> GetSeller(Guid sellerId);
+        Task DeleteSeller(Seller seller);
 
     }
 }
