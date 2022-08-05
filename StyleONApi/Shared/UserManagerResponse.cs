@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shared
 {
-    public  class UserManagerResponse
+    public  class UserManagerResponse : SimpleResponse
     {
         public string Token { get; set; }
         public string Message { get; set; }
@@ -16,5 +16,7 @@ namespace Shared
 
         // THis check whe token will expire
         public DateTime? ExpiredDate { get; set; }
+
+        public object ObjectToReturn { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,8 @@ namespace StyleONApi.Entities
 
         public string Position { get; set; }
 
-
+       
+        // Know whether to use sellerId or Seller.....
         // 4 dispatch
         // 4 seller
     }
