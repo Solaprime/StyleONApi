@@ -45,18 +45,21 @@ namespace StyleONApi.Controllers
             }
             return Ok(_mapper.Map<IEnumerable<SellerDto>>(result));
         }
+        
 
-        [HttpDelete("{sellerId}")]
-        public  async Task<ActionResult> DeleteSeller(Guid sellerId)
-        {
-            var sellersFromRepo =  await _sellerrepository.GetSeller(sellerId);
-            if (sellersFromRepo == null)
-            {
-                return NotFound();
-            }
-          await  _sellerrepository.DeleteSeller(sellersFromRepo);
-            return NoContent();
-        }
+        //Does my businees requirement require me to delete seller a
+
+        //[HttpDelete("{sellerId}")]
+        //public  async Task<ActionResult> DeleteSeller(Guid sellerId)
+        //{
+        //    var sellersFromRepo =  await _sellerrepository.GetSeller(sellerId);
+        //    if (sellersFromRepo == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //  await  _sellerrepository.DeleteSeller(sellersFromRepo);
+        //    return NoContent();
+        //}
 
         //Sellers shoulb be able partially update their details
         // Write a Logic such that each row in a seller table has a unique email
