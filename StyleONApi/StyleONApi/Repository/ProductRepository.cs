@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StyleONApi.Context;
 using StyleONApi.Entities;
+using StyleONApi.Helpers;
 using StyleONApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
@@ -163,20 +164,20 @@ namespace StyleONApi.Repository
         }
 
 
-
-        public async Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters)
+        // Changed to pAGEDlIst
+        public async Task<PagedList<Product>> GetAllProducts(ProductResourceParameters productResourceParameters)
         {
             if (productResourceParameters == null)
             {
                 throw new ArgumentNullException(nameof(productResourceParameters));
             }
-            if (string.IsNullOrWhiteSpace(productResourceParameters.MainCategory)
-                &&
-                string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
-            {
-                // return GetAllProductNonAsync();
-                return await GetAllProductsInDatabase();
-            }
+            //if (string.IsNullOrWhiteSpace(productResourceParameters.MainCategory)
+            //    &&
+            //    string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
+            //{
+            //    // return GetAllProductNonAsync();
+            //    return await GetAllProductsInDatabase();
+            //}
             var collectionOfProduct = _context.Products as IQueryable<Product>;
 
             if (!string.IsNullOrWhiteSpace(productResourceParameters.SearchQuery))
@@ -185,7 +186,8 @@ namespace StyleONApi.Repository
                 collectionOfProduct = collectionOfProduct.Where(a => a.Name.Contains(searchQuery));
             }
 
-            return await collectionOfProduct.ToListAsync();
+            return PagedList<Product>.Create(collectionOfProduct, productResourceParameters.PageNumber,
+                productResourceParameters.PageSize);
 
             // implement the both dat if a consumer inputted both searchquery and maincategorry
             // the data returned must contain the two condition mentioned
