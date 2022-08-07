@@ -176,7 +176,7 @@ namespace StyleONApi.Controllers
             // Check id Seller Exist 
             // you get product 
             //YOu Delet Course
-            if (await _repository.SellerExist(sellerId))
+            if (!await _repository.SellerExist(sellerId))
             {
                 return NotFound();
             }
