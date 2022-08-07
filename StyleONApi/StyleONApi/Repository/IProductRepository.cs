@@ -1,4 +1,5 @@
 ﻿using StyleONApi.Entities;
+using StyleONApi.Helpers;
 using StyleONApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,10 @@ namespace StyleONApi.Repository
         Task<IEnumerable<Product>> GetAllProductsInDatabase();
 
 
-        
-        Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
 
+       // Task<IEnumerable<Product>> GetAllProducts(ProductResourceParameters productResourceParameters);
+
+         Task<PagedList<Product>>  GetAllProducts(ProductResourceParameters productResourceParameters);
 
         // YOu will need to erase the above vode
         Task<IEnumerable<Product>> GetAllProducts(Guid SellerId);

@@ -10,6 +10,7 @@ using StyleONApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace StyleONApi.Controllers
@@ -27,31 +28,42 @@ namespace StyleONApi.Controllers
             _mapper = mapper;
         }
 
-        // Re visit this Method it has no seller
-        //[HttpPost()]
-        //public async Task<ActionResult<IEnumerable<ProductForCreationDto>>> 
-        //    CreatingMultipleProduct(IEnumerable<ProductForCreationDto> products)
-        //{
-        //    var productsToCreate = _mapper.Map<IEnumerable<Product>>(products);
-        //    if (productsToCreate == null)
-        //    {
-        //        return BadRequest("No products was entereed");
-        //    }
-        //    await _repository.CreateMultipleProduct(productsToCreate);
-        //    return Ok(productsToCreate);
-        //}
-
-        [HttpGet()]
+  // Pagination data are passed as query Parameters ,
+  // For best practice sake we returm a custom header that wull containd our pagination metadata
+        [HttpGet(Name ="GetAllProduct")]
         //  [Authorize(Roles ="AppUser, AppSeller")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
         [FromQuery] ProductResourceParameters productResourceParameter)
         {
             var result = await _repository.GetAllProducts(productResourceParameter);
-            if (result == null)
+            //if (result == null)
+            //{
+            //    return BadRequest("Sorry we cant find what you are Looking For ");
+            //}
+
+
+
+            var previousPageLink = result.HasPrevious ?
+                CreateAuthorsResourceUri(productResourceParameter,
+                ResourceUriType.PreviousPage) : null;
+
+            var nextPageLink = result.HasNext ?
+                CreateAuthorsResourceUri(productResourceParameter,
+                ResourceUriType.NextPage) : null;
+
+            var paginationMetadata = new
             {
-                return BadRequest("Sorry we cant find what you are Looking For ");
-            }
-            //return Ok(result);
+                totalCount = result.TotalCount,
+                pageSize = result.PageSize,
+                currentPage = result.CurrentPage,
+                totalPages = result.TotalPages,
+                previousPageLink,
+                nextPageLink
+            };
+
+            Response.Headers.Add("X-Pagination",
+                JsonSerializer.Serialize(paginationMetadata));
+
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(result));
 
         }
@@ -105,6 +117,51 @@ namespace StyleONApi.Controllers
 
 
         //Method to edit
+
+        // Sice we are dealing with pagination we need to generate a link that will 
+        // Lead to the previouse and NexrPage
+
+
+
+        private string CreateAuthorsResourceUri(
+           ProductResourceParameters productresourceParameters,
+           ResourceUriType type)
+        {
+            switch (type)
+            {
+                case ResourceUriType.PreviousPage:
+                    return Url.Link("GetAllProduct",
+                      new
+                      {
+                          pageNumber = productresourceParameters.PageNumber - 1,
+                          pageSize = productresourceParameters.PageSize,
+                          mainCategory = productresourceParameters.MainCategory,
+                          searchQuery = productresourceParameters.SearchQuery
+                      });
+                case ResourceUriType.NextPage:
+                    return Url.Link("GetAllProduct",
+                      new
+                      {
+                          pageNumber = productresourceParameters.PageNumber + 1,
+                          pageSize = productresourceParameters.PageSize,
+                          mainCategory = productresourceParameters.MainCategory,
+                          searchQuery = productresourceParameters.SearchQuery
+                      });
+
+                default:
+                    return Url.Link("GetAllProduct",
+                    new
+                    {
+                        pageNumber = productresourceParameters.PageNumber,
+                        pageSize = productresourceParameters.PageSize,
+                        mainCategory = productresourceParameters.MainCategory,
+                        searchQuery = productresourceParameters.SearchQuery
+                    });
+            }
+
+        }
+
+
 
     }
 
