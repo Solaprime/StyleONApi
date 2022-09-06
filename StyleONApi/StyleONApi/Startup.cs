@@ -274,5 +274,5 @@ namespace StyleONApi
 // https://localhost:44385/swagger/index.html
 
 
-//klalalalallala
+//
 
