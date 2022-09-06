@@ -21,7 +21,7 @@ namespace StyleONApi.Controllers
     //  [ApiConventionType(typeof(DefaultApiConventions))]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, AppSeller")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+      [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repository;

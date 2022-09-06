@@ -104,7 +104,7 @@ namespace StyleONApi.AuthServices
                 {
                     return new UserManagerResponse
                     {
-                        Message = $"The role {rolename} has been succeede succesfully",
+                        Message = $"The role {rolename} has been Created succesfully",
                         IsSuccess = true,
                     };
                 }
@@ -120,7 +120,7 @@ namespace StyleONApi.AuthServices
             return new UserManagerResponse
             {
                 IsSuccess = false,
-                Message = "Role already exist"
+                Message = "Role already exist, You can  create an Existing Role"
             };
 
         }
@@ -149,7 +149,7 @@ namespace StyleONApi.AuthServices
 
                 return new UserManagerResponse
                 {
-                    Message = "No user with this Email exist in our Databse",
+                    Message = "No user with this Email exist in our Databse" ,
                     IsSuccess = false
                 };
 
@@ -164,6 +164,8 @@ namespace StyleONApi.AuthServices
                 };
 
             }
+            // From above no nned to tell the user which is wrong. Just return a generic massage like 
+            //Password and Email are not matching
             var jwtTokenResponse = await GenerateJwtToken(user);
             //return new UserManagerResponse
             //{
@@ -188,7 +190,7 @@ namespace StyleONApi.AuthServices
             {
                 return new UserManagerResponse
                 {
-                    Message = "This user already exist",
+                    Message = "This user, with this Email  already exist",
                     IsSuccess = false,
                 };
             }
@@ -215,7 +217,7 @@ namespace StyleONApi.AuthServices
             }
             return new UserManagerResponse
             {
-                Message = "Unable to create user",
+                Message = "Unable to create user, Kindly try again",
                 IsSuccess = false,
                 Error = result.Errors.Select(e => e.Description),
 
@@ -243,7 +245,7 @@ namespace StyleONApi.AuthServices
             {
                 return new UserManagerResponse
                 {
-                    Message = "Role can not be Found",
+                    Message = "Role can not be Found, this given role cant be found.",
                     IsSuccess = false
                 };
             }
@@ -282,10 +284,6 @@ namespace StyleONApi.AuthServices
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
             };
-
-
-
-
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             var jwtToken = jwtTokenHandler.WriteToken(token);
 
@@ -556,12 +554,12 @@ namespace StyleONApi.AuthServices
 
                         };
                     }
-                
+
                     // Finish
 
 
 
-                 seller.SellerId = Guid.NewGuid();
+                    seller.SellerId = Guid.NewGuid();
                     _context.Sellers.Add(seller);
                     await _context.SaveChangesAsync();
                     // Send a Mail to seller telling them Dere details have been Updated
