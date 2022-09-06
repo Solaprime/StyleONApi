@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.Extensions.Logging;
 using StyleONApi.Entities;
 using StyleONApi.Helpers;
 using StyleONApi.Model;
@@ -22,10 +23,13 @@ namespace StyleONApi.Controllers
     {
         private readonly IProductRepository _repository;
         private readonly IMapper _mapper;
-        public ProductsCollectionController(IProductRepository productRepository, IMapper mapper)
+        private readonly ILogger<ProductsCollectionController> _logger;
+        public ProductsCollectionController(IProductRepository productRepository, IMapper mapper,
+            ILogger<ProductsCollectionController> logger)
         {
             _repository = productRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
   // Pagination data are passed as query Parameters ,
@@ -35,6 +39,14 @@ namespace StyleONApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
         [FromQuery] ProductResourceParameters productResourceParameter)
         {
+          //  _logger.LogInformation("Hello everybody we are from prodictcolllectioncontroller");
+
+
+            // the flow for Login user
+            var userId = User.Claims.FirstOrDefault(a=> a.Type == "Id")?.Value;
+            _logger.LogInformation(message:"{Username} with {userId} is about to make this call",
+                User.Identity.Name, userId);
+            
             var result = await _repository.GetAllProducts(productResourceParameter);
             //if (result == null)
             //{
