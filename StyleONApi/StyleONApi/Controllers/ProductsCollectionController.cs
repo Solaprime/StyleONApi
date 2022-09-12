@@ -39,13 +39,13 @@ namespace StyleONApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
         [FromQuery] ProductResourceParameters productResourceParameter)
         {
-          //  _logger.LogInformation("Hello everybody we are from prodictcolllectioncontroller");
+          
 
 
             // the flow for Login user
             var userId = User.Claims.FirstOrDefault(a=> a.Type == "Id")?.Value;
-            _logger.LogInformation(message:"{Username} with {userId} is about to make this call",
-                User.Identity.Name, userId);
+            _logger.LogInformation(message:"{Username} with {userId} with{role} is about to Get all the books",
+                User.Identity.Name, userId );
             
             var result = await _repository.GetAllProducts(productResourceParameter);
             //if (result == null)
@@ -84,12 +84,14 @@ namespace StyleONApi.Controllers
         public async Task<ActionResult<ProductDtoTest>> AddMultipleProduct(Guid sellerId,
             [FromBody] IEnumerable<ProductForCreationDto> product)
         {
+
             var ifSellerExist = await _repository.SellerExist(sellerId);
 
             if (!ifSellerExist)
             {
                 return NotFound();
             }
+            // Log dat seeler with sellerId abput to create product
             var productsToCreate = _mapper.Map<IEnumerable<Product>>(product);
             if (productsToCreate == null)
             {
@@ -97,6 +99,7 @@ namespace StyleONApi.Controllers
             }
             foreach (var productItem in productsToCreate)
             {
+                //Log product has been saved
                 await _repository.CreateProduct(sellerId,  productItem);
                 await _repository.Save();
             }
