@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using StyleONApi.AuthServices;
 using StyleONApi.Context;
@@ -211,14 +212,43 @@ namespace StyleONApi
                         }
                         return actionApiVersionModel.ImplementedApiVersions.Any(v =>
                            $"LibraryOpenApiSpecification{v.ToString()}" == documentName);
+                        // In the properties file we tick the Box to allow Xml Docu,netatio and
+                        //the location to document and we erase to name of assenmbly
+
+
+                       
+                       
                     });
-                    // In the properties file we tick the Box to allow Xml Docu,netatio and
-                    //the location to document and we erase to name of assenmbly
+             
                   
                 }
+                
                 var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
                 setupAction.IncludeXmlComments(xmlCommentsFullPath);
+
+                // Security Definotion flow
+                setupAction.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                { 
+                  Name = "Authorization",
+                  Type = SecuritySchemeType.ApiKey,
+                  Scheme = "Bearer",
+                  BearerFormat = "JWT",
+                  In = ParameterLocation.Header,
+                  Description = "Enter 'Bearer' [space] and then your valid token in the text input below .\r\n\r\nExample: \"Bearer eyjhGciojdkrandomshitjvnvlvlvkkossps\"",
+
+                });
+                setupAction.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                  {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer" }
+                        }, new List<string>() }
+
+                });
 
             });
 
