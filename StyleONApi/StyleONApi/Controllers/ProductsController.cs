@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using StyleONApi.Repository;
@@ -21,15 +22,19 @@ namespace StyleONApi.Controllers
     //  [ApiConventionType(typeof(DefaultApiConventions))]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, AppSeller")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repository;
         private readonly IMapper _mapper;
-        public ProductsController(IProductRepository repository, IMapper mapper)
+        private readonly ILogger<ProductsController> _logger;
+
+        public ProductsController(IProductRepository repository, IMapper mapper,
+            ILogger<ProductsController> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger; 
         }
 
         /// <summary>

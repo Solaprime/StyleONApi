@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.Extensions.Logging;
 using StyleONApi.Entities;
 using StyleONApi.Helpers;
 using StyleONApi.Model;
@@ -22,10 +23,13 @@ namespace StyleONApi.Controllers
     {
         private readonly IProductRepository _repository;
         private readonly IMapper _mapper;
-        public ProductsCollectionController(IProductRepository productRepository, IMapper mapper)
+        private readonly ILogger<ProductsCollectionController> _logger;
+        public ProductsCollectionController(IProductRepository productRepository, IMapper mapper,
+            ILogger<ProductsCollectionController> logger)
         {
             _repository = productRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
   // Pagination data are passed as query Parameters ,
@@ -35,6 +39,14 @@ namespace StyleONApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProduct(
         [FromQuery] ProductResourceParameters productResourceParameter)
         {
+          
+
+
+            // the flow for Login user
+            var userId = User.Claims.FirstOrDefault(a=> a.Type == "Id")?.Value;
+            _logger.LogInformation(message:"{Username} with {userId} with{role} is about to Get all the books",
+                User.Identity.Name, userId );
+            
             var result = await _repository.GetAllProducts(productResourceParameter);
             //if (result == null)
             //{
@@ -72,12 +84,14 @@ namespace StyleONApi.Controllers
         public async Task<ActionResult<ProductDtoTest>> AddMultipleProduct(Guid sellerId,
             [FromBody] IEnumerable<ProductForCreationDto> product)
         {
+
             var ifSellerExist = await _repository.SellerExist(sellerId);
 
             if (!ifSellerExist)
             {
                 return NotFound();
             }
+            // Log dat seeler with sellerId abput to create product
             var productsToCreate = _mapper.Map<IEnumerable<Product>>(product);
             if (productsToCreate == null)
             {
@@ -85,6 +99,7 @@ namespace StyleONApi.Controllers
             }
             foreach (var productItem in productsToCreate)
             {
+                //Log product has been saved
                 await _repository.CreateProduct(sellerId,  productItem);
                 await _repository.Save();
             }

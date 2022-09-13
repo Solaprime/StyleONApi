@@ -23,5 +23,10 @@ namespace StyleONApi.AuthServices
         Task<SimpleResponse> UpdateSeller(Seller seller);
         Task<SimpleResponse> FindAllUserInRole(string roleName);
         //Task<IdentityRole> GetUserRoles(string email);
+
+        // Logout
+        //How to restrict a seller from Posting
+        //Account LockOut
+        //
     }
 }
