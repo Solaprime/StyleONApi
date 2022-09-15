@@ -26,6 +26,7 @@
             <param name="sellerId"></param>
             <param name="product"></param>
             <returns></returns>
+            Only a seller dat is login can post a product
         </member>
         <member name="M:StyleONApi.Controllers.ProductsController.partiallyUpdateAProduct(System.Guid,System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{StyleONApi.Model.ProductForUpdate})">
              <summary>
@@ -65,6 +66,19 @@
             <param name="productId"></param>
             <returns> An actionresult of ProductDtoTest </returns>
             <response code = "200">Returns the Book</response>
+        </member>
+        <member name="M:StyleONApi.Controllers.SellersController.GetAllSellers">
+            <summary>
+            get all seller who has updated the form a verifcatiion process
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:StyleONApi.Controllers.SellersController.GetAllSellers(StyleONApi.ResourceParameters.SelllersResourceParameters)">
+            <summary>
+            searching a seller by name or other parameter
+            </summary>
+            <param name="resourceParameters"></param>
+            <returns></returns>
         </member>
         <member name="T:StyleONApi.Model.ApplicationUserDto">
             <summary>

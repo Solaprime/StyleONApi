@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -617,5 +618,119 @@ namespace StyleONApi.AuthServices
             };
         }
         // Replacre the response and context
+
+
+
+        //// Flow to confirm email
+        //public async Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token)
+        //{
+        //    // It is in two part, If user regsuter succedffully we genrae a token den send to the user email to confirm.
+        //    var user = await _userManager.FindByIdAsync(userId);
+        //    if (user == null)
+        //    {
+        //        return new UserManagerResponse
+        //        {
+        //            IsSuccess = false,
+        //            Message = "User can not be found",
+        //        };
+        //    }
+        //    // U need to decode the toekn
+        //    var decodedToken = WebEncoders.Base64UrlDecode(token);
+        //    string normalToken = Encoding.UTF8.GetString(decodedToken);
+        //    var result = await _userManager.ConfirmEmailAsync(user, normalToken);
+        //    if (result.Succeeded)
+        //    {
+        //        return new UserManagerResponse
+        //        {
+        //            Message = "Email Confirmed Succesffully",
+        //            IsSuccess = true,
+        //        };
+        //    }
+        //    return new UserManagerResponse
+        //    {
+        //        IsSuccess = false,
+        //        Message = "Email did not confirm",
+        //        Error = result.Errors.Select(e => e.Description)
+        //    };
+        //}
+
+
+
+
+
+
+        public async Task<UserManagerResponse> ForgetPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    IsSuccess = false,
+                    Message = "No user with this email exist"
+                };
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            // this token mught contain some special charcters like forward slash, --- dat might not load well or be rejected on browser
+            // so we need to encode it
+            var encodedEmailToken = Encoding.UTF8.GetBytes(token);
+            var validToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
+            // If for web
+            //  we can generate a link to the website in a web page
+            //   this mail to send mail
+
+            //string Url = $"{_configuration["AppUrl"]}/ResetPassword?email={email}&token={validToken}";
+
+            //// send the url via the mail service
+            //await _emailService.SendEmailAsync(email, "Reset Password", "<h1>Follow the instructions to reset Your Password</h1>" +
+            //    $"<p>reset your password <a href='{Url}'>Click here bro</a></p>");
+
+            var userId = await _userManager.GetUserIdAsync(user);
+
+
+
+            //  var result = await _userManager.Ch
+            return new UserManagerResponse
+            {
+                IsSuccess = true,
+                // Message = "Reset Password Url has been sent to YOU succesfully"
+                Message = validToken,
+                Id = userId
+            };
+
+        }
+
+        //flow to ResetPassword Async
+        public async Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    IsSuccess = false,
+                    Message = "User can not be found",
+                };
+            }
+            var decodedToken = WebEncoders.Base64UrlDecode(model.Token);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+            var result = await _userManager.ResetPasswordAsync(user, normalToken, model.Password);
+            if (result.Succeeded)
+            {
+                return new UserManagerResponse
+                {
+                    IsSuccess = true,
+                    Message = "Password has been Resetted succesfully"
+                };
+            }
+            return new UserManagerResponse
+            {
+                IsSuccess = false,
+                Message = "Somwthing went wrong Kidlu try again later",
+                Error = result.Errors.Select(e => e.Description)
+            };
+
+        }
+
     }
 }

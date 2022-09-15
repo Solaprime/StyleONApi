@@ -18,5 +18,6 @@ namespace Shared
         public DateTime? ExpiredDate { get; set; }
 
         public object ObjectToReturn { get; set; }
+        public string Id { get; set; }
     }
 }

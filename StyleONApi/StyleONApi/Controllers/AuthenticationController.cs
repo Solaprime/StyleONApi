@@ -91,7 +91,7 @@ namespace StyleONApi.Controllers
 
 
 
-
+        // On;y admin can create a role
         // CREATING A Role
         [HttpPost("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody] string roleName)
@@ -131,10 +131,10 @@ namespace StyleONApi.Controllers
 
         [HttpGet]
         [Route("GetUserRoles")]
-        public async Task<IActionResult> GetUserRoles([FromBody] string email)
+        public async Task<IActionResult> GetUserRoles([FromBody] EmailFlow email)
         {
             // check if the email is valid
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email.Email);
 
             if (user == null) // User does not exist
             {
@@ -186,9 +186,9 @@ namespace StyleONApi.Controllers
 
         // Findng a user
         [HttpGet("GetSingleUser")]
-        public async Task<ActionResult<ApplicationUserDto>> FindUser([FromBody] string email)
+        public async Task<ActionResult<ApplicationUserDto>> FindUser([FromBody] EmailFlow email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email.Email);
             if (user == null)
             {
                 return BadRequest("We cant find User");
@@ -208,6 +208,69 @@ namespace StyleONApi.Controllers
             }
             return BadRequest(seller);
         }
+
+
+        // you hit the forget endpoint ang get token ans Id
+        //api/auth/forgetPassword
+        [HttpPost("ForgetPassword")]
+        public async Task<IActionResult> ForgetPassword([FromBody] EmailFlow email)
+        {
+            if (string.IsNullOrWhiteSpace(email.Email))
+            {
+                return BadRequest("The string is empty");
+            }
+
+            var result = await _userService.ForgetPasswordAsync(email.Email);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+
+
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.ResetPasswordAsync(model);
+                if (result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result);
+                }
+            }
+            return BadRequest("Some Model validation Occur");
+        }
+
+
+
+
+        //api/auth/confirmEmail?userId&token
+        //[HttpGet("ConfirmEmail")]
+        //public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        //{
+        //    if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+        //    {
+        //        return NotFound();
+        //    }
+        //    var result = await _userService.ConfirmEmailAsync(userId, token);
+        //    if (result.IsSuccess)
+        //    {
+        //        // we are redirecting the user to a static Html Page
+        //        //  return Redirect($"{_configuration["AppUrl"]}/EmailConfirmed.html");
+        //        return Ok($"About to confirm emaiil");
+        //    }
+        //    return BadRequest(result);
+        //}
+
+
     }
 }
 

@@ -22,6 +22,12 @@ namespace StyleONApi.AuthServices
         Task<UserManagerResponse> VerifyAndGenerateToken(TokenRequest tokenRequest);
         Task<SimpleResponse> UpdateSeller(Seller seller);
         Task<SimpleResponse> FindAllUserInRole(string roleName);
+
+       // Flow to confirm email
+       // Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
+        Task<UserManagerResponse> ForgetPasswordAsync(string email);
+        Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);
+
         //Task<IdentityRole> GetUserRoles(string email);
 
         // Logout
