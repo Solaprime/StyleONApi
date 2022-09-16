@@ -48,6 +48,7 @@ namespace StyleONApi
 
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<ISellerRepository, SellersRepository>();
 
 
@@ -95,6 +96,9 @@ namespace StyleONApi
 
                     jwt.SaveToken = true;
                     jwt.TokenValidationParameters = tokenValidationParams;
+                    // you can configure the 
+                    //validate issuer, validate audience, valid audience, validissuer
+                    //issueersigninngKey and the lIkes
 
                 });
 

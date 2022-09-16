@@ -16,7 +16,8 @@ namespace StyleONApi.Entities
 
         public string Position { get; set; }
 
-       
+       // shoulf your use case require a reference to the urefreshtoken table
+       // no but, you can check your use case
         // Know whether to use sellerId or Seller.....
         // 4 dispatch
         // 4 seller

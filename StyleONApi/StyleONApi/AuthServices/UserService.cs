@@ -27,19 +27,20 @@ namespace StyleONApi.AuthServices
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly StyleONContext _context;
         private readonly ISellerRepository _sellerRepository;
-
+        private readonly ITokenService _tokenService;
         private readonly TokenValidationParameters _tokenValidationParams;
 
 
 
         public UserService(UserManager<ApplicationUser> userManger,
        IConfiguration configuration, RoleManager<IdentityRole> roleManager,
-
+              ITokenService service,
             TokenValidationParameters tokenValidationParams,
             ISellerRepository sellerRepository,
 
        StyleONContext context)
         {
+            _tokenService = service;
             _userManager = userManger;
             _configuration = configuration;
             _roleManager = roleManager;
@@ -167,7 +168,8 @@ namespace StyleONApi.AuthServices
             }
             // From above no nned to tell the user which is wrong. Just return a generic massage like 
             //Password and Email are not matching
-            var jwtTokenResponse = await GenerateJwtToken(user);
+           // var jwtTokenResponse = await GenerateJwtToken(user);
+            var jwtTokenResponse = await _tokenService.GenerateJwtToken(user);
             //return new UserManagerResponse
             //{
             //    Message = "Login Succesfful ",
@@ -207,7 +209,8 @@ namespace StyleONApi.AuthServices
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(identityUser, "AppUser");
-                var jwtTokenResponse = await GenerateJwtToken(identityUser);
+              //  var jwtTokenResponse = await GenerateJwtToken(identityUser);
+                var jwtTokenResponse = await _tokenService.GenerateJwtToken(identityUser);
                 //return new UserManagerResponse
                 //{
                 //    Message = "User Created Succesfully",
@@ -285,6 +288,7 @@ namespace StyleONApi.AuthServices
                 Expires = DateTime.Now.AddMinutes(5),    //AddSeconds(20) for test sake
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
+                // you can configure the issuer, audience and other properties here
             };
             // create the token from a given description
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
@@ -335,6 +339,7 @@ namespace StyleONApi.AuthServices
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                // we can passs in additonal claim to these flow 
             };
 
             // Getting the claims that we have assigned to the user
@@ -502,7 +507,8 @@ namespace StyleONApi.AuthServices
 
                 // Generate a new token
                 var dbUser = await _userManager.FindByIdAsync(storedToken.UserId);
-                return await GenerateJwtToken(dbUser);
+               // return await GenerateJwtToken(dbUser);
+                return await _tokenService.GenerateJwtToken(dbUser);
             }
             catch (Exception ex)
             {

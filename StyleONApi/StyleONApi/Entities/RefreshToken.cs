@@ -22,5 +22,11 @@ namespace StyleONApi.Entities
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
 
+
+        // whenenever the refreshtoken has been revoked always 
+        //always set the isrevoked property to false
+        //the token in this case is it the JWT TOKen or Refreshtoken 
+        // if it is refresh tpken it os best to hash it oh
+
     }
 }

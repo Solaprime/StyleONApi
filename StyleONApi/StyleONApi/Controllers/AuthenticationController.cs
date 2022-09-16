@@ -22,11 +22,14 @@ namespace StyleONApi.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
         public AuthenticationController(IUserService userService,
            UserManager<ApplicationUser> userManager,
+           ITokenService tokenService,
            RoleManager<IdentityRole> roleManager, IMapper mapper)
 
         {
+            _tokenService = tokenService;
             _userService = userService;
             _userManager = userManager;
             _roleManager = roleManager;
@@ -174,7 +177,8 @@ namespace StyleONApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _userService.VerifyAndGenerateToken(tokenRequest);
+               // var result = await _userService.VerifyAndGenerateToken(tokenRequest);
+                var result = await _tokenService.VerifyAndGenerateToken(tokenRequest);
                 if (result.IsSuccess == false)
                 {
                     return BadRequest(result);
@@ -182,6 +186,8 @@ namespace StyleONApi.Controllers
                 return Ok(result);
             }
             return BadRequest("Something Bad happened");
+            //when refreshing a token u needd to pass in the userId of the perosn refereshong th
+            //token consider the flow if it is legit
         }
 
         // Findng a user
