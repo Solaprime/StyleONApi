@@ -131,10 +131,10 @@ namespace StyleONApi.Controllers
 
         [HttpGet]
         [Route("GetUserRoles")]
-        public async Task<IActionResult> GetUserRoles([FromBody] EmailFlow email)
+        public async Task<IActionResult> GetUserRoles([FromQuery] string email)
         {
             // check if the email is valid
-            var user = await _userManager.FindByEmailAsync(email.Email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null) // User does not exist
             {
@@ -185,10 +185,11 @@ namespace StyleONApi.Controllers
         }
 
         // Findng a user
+        // revamp this get shouldnt take in parameter fromBody
         [HttpGet("GetSingleUser")]
-        public async Task<ActionResult<ApplicationUserDto>> FindUser([FromBody] EmailFlow email)
+        public async Task<ActionResult<ApplicationUserDto>> FindUser([FromQuery] string email)
         {
-            var user = await _userManager.FindByEmailAsync(email.Email);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 return BadRequest("We cant find User");
@@ -210,7 +211,8 @@ namespace StyleONApi.Controllers
         }
 
 
-        // you hit the forget endpoint ang get token ans Id
+        // you hit the forget endpoint ang get token and Id
+        // u will need the token to reset the password, token is from message
         //api/auth/forgetPassword
         [HttpPost("ForgetPassword")]
         public async Task<IActionResult> ForgetPassword([FromBody] EmailFlow email)

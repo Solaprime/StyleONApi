@@ -278,6 +278,7 @@ namespace StyleONApi.AuthServices
             var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
             // gET all valid claims for a user
             var claims = await GetAllValidClaims(user);
+            //describes the token Flow
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
@@ -285,9 +286,12 @@ namespace StyleONApi.AuthServices
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
             };
+            // create the token from a given description
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+            //write the token
             var jwtToken = jwtTokenHandler.WriteToken(token);
 
+            // Refresh token Flow, use to genrate a new token when a jwt token has expired
             var refreshToken = new RefreshToken()
             {
                 JwtId = token.Id,
