@@ -130,6 +130,7 @@ namespace StyleONApi.AuthServices
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             //write the token
             var jwtToken = jwtTokenHandler.WriteToken(token);
+            
 
             // Refresh token Flow, use to genrate a new token when a jwt token has expired
             var refreshToken = new RefreshToken()
@@ -142,7 +143,7 @@ namespace StyleONApi.AuthServices
                 ExpiryDate = DateTime.UtcNow.AddMonths(6),
                 Token = RandomString(35) + Guid.NewGuid()
             };
-
+            
 
             // Check thE ID property of Refrshtoken
 
@@ -160,7 +161,7 @@ namespace StyleONApi.AuthServices
         }
 
 
-
+        //this flow is for refresh token and refresh token
         public async Task<UserManagerResponse> VerifyAndGenerateToken(TokenRequest tokenRequest)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -169,6 +170,7 @@ namespace StyleONApi.AuthServices
             {
                 // Validation 1 - Validation JWT token format
                 _tokenValidationParams.ValidateLifetime = false;
+                //thid flow validates the token
                 var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParams, out var validatedToken);
                 _tokenValidationParams.ValidateLifetime = true;
 
@@ -299,6 +301,23 @@ namespace StyleONApi.AuthServices
                     };
                 }
             }
+        }
+
+        // Probably remove or refacto this code 
+        public async  Task<bool> RemoveRefreshTokenAsync(ApplicationUser user)
+        {
+           // get the user refresh token
+           var userRefreshToken = await _context.RefreshTokens
+                .Where(c => c.UserId == user.Id).FirstOrDefaultAsync();
+            if (userRefreshToken == null)
+            {
+                return false;
+            }
+            if (userRefreshToken != null)
+            {
+                _context.RefreshTokens.Remove(userRefreshToken);
+            }
+            return false;
         }
     }
 }

@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shared;
 using StyleONApi.AuthServices;
-using StyleONApi.Entities;
+using StyleONApi.Context;    //context is not meant to be In the controller remember to delete this
+using StyleONApi.Entities; 
 using StyleONApi.Model;
 using System;
 using System.Collections.Generic;
@@ -23,10 +25,12 @@ namespace StyleONApi.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
+        private readonly StyleONContext _context;    // delete and refactor
         public AuthenticationController(IUserService userService,
            UserManager<ApplicationUser> userManager,
            ITokenService tokenService,
-           RoleManager<IdentityRole> roleManager, IMapper mapper)
+            StyleONContext context, /// Delete and refactor 
+        RoleManager<IdentityRole> roleManager, IMapper mapper)
 
         {
             _tokenService = tokenService;
@@ -34,6 +38,8 @@ namespace StyleONApi.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _mapper = mapper;
+            _context = context;     // dleter and refacto
+
 
         }
         [HttpPost("Register")]
@@ -256,6 +262,39 @@ namespace StyleONApi.Controllers
             }
             return BadRequest("Some Model validation Occur");
         }
+
+        [HttpPost("Logout")]
+        public async  Task<IActionResult> Logout([FromQuery]string userId)
+        {
+            //the refrshtoken i am workign with is null
+            //    var refreshToken =  await  _context.RefreshTokens.Where(C => C.UserId == userId).FirstOrDefaultAsync();
+            var refreshToken = await _context.RefreshTokens.Where(c => c.UserId == userId).ToListAsync();
+            if (refreshToken == null)
+            {
+                return BadRequest("No refresh token exist for these user");
+            }
+            // check the refreshtoken dat has not been used
+            var unUsedToken = new List<RefreshToken>();
+            foreach (var item in refreshToken)
+            {
+                // flow to check if token has been used, you can also check if token has been revoked has the case may be 
+                if (!item.IsUsed)
+                {
+                    unUsedToken.Add(item);
+                }
+            }
+
+            // we can either delete all the Unuu=sed token or revoke those token or set the used property to true
+            foreach (var item in unUsedToken)
+            {
+                _context.RefreshTokens.Remove(item);
+                _context.SaveChanges();
+            }
+             // _context.RefreshTokens.Remove(refreshToken);
+          //  _context.SaveChanges();
+            return Ok("User Logged out Succesffully");
+        }
+        
 
 
 
