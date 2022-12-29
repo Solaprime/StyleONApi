@@ -22,7 +22,7 @@ namespace Shared
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
         [Compare("PassWord",
-            ErrorMessage = "Tested a new Data Attribute confirm Password and Paassword dont match")]
+            ErrorMessage = " confirm Password and Paassword dont match")]
 
         public string ConfirmPassword { get; set; }
     }

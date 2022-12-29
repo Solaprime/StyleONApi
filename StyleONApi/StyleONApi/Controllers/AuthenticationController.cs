@@ -102,6 +102,7 @@ namespace StyleONApi.Controllers
 
         // On;y admin can create a role
         // CREATING A Role
+       
         [HttpPost("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody] string roleName)
         {
@@ -210,7 +211,9 @@ namespace StyleONApi.Controllers
             return Ok(result);
         }
 
+        //Refactor
         [HttpPost("UpdateSeller")]
+        // [HttpPost("RegisterasSeller")]
         public async Task<IActionResult> UpdateSeller([FromBody] SellerForUpdateDto sellerDto)
         {
             var selllerToUpdate = _mapper.Map<Seller>(sellerDto);
@@ -262,6 +265,9 @@ namespace StyleONApi.Controllers
             }
             return BadRequest("Some Model validation Occur");
         }
+
+
+        //How to Properly Logout, Refactor Logout 
 
         [HttpPost("Logout")]
         public async  Task<IActionResult> Logout([FromQuery]string userId)

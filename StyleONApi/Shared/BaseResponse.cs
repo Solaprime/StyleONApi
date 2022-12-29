@@ -3,6 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace Shared
 {
+
+    /// <summary>
+    /// THis is the base response for all our response 
+    /// </summary>
     public abstract class BaseResponse
     {
         //[JsonIgnore()]

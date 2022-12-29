@@ -53,7 +53,7 @@ namespace StyleONApi.AuthServices
 
         public async Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail)
         {
-
+            // Check if user with that email Exist.
             var user = await _userManager.FindByEmailAsync(roleEmail.Email);
             if (user == null)
             {
@@ -64,7 +64,7 @@ namespace StyleONApi.AuthServices
                 };
             }
 
-
+            // Check if the Role you wish to add the user to Exist 
             var roleExist = await _roleManager.RoleExistsAsync(roleEmail.RoleName);
             if (!roleExist)
             {
@@ -99,8 +99,10 @@ namespace StyleONApi.AuthServices
         public async Task<UserManagerResponse> CreateRole(string rolename)
         {
             var roleExist = await _roleManager.RoleExistsAsync(rolename);
+            // If Role Does not exist ,
             if (!roleExist)
             {
+                // Create the Role 
                 var roleResult = await _roleManager.CreateAsync(new IdentityRole(rolename));
                 if (roleResult.Succeeded)
                 {
@@ -115,14 +117,15 @@ namespace StyleONApi.AuthServices
                     return new UserManagerResponse
                     {
                         IsSuccess = false,
-                        Message = $"The role {rolename} was not  created, Kindly try Again"
+                         Message = $"The role {rolename} was not  created, Kindly try Again "
+                      //  Message =   roleResult.Errors.ToString()
                     };
                 }
             }
             return new UserManagerResponse
             {
                 IsSuccess = false,
-                Message = "Role already exist, You can  create an Existing Role"
+                Message = "Role already exist, You can  not  create an Existing Role"
             };
 
         }
@@ -143,8 +146,10 @@ namespace StyleONApi.AuthServices
 
         }
 
+
         public async Task<UserManagerResponse> LoginUserAsync(LoginViewModel model)
         {
+            // Check if user with Email with Email Wxist 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -156,6 +161,7 @@ namespace StyleONApi.AuthServices
                 };
 
             }
+            // Check user Passsowrd
             var result = await _userManager.CheckPasswordAsync(user, model.PassWord);
             if (!result)
             {
@@ -169,6 +175,8 @@ namespace StyleONApi.AuthServices
             // From above no nned to tell the user which is wrong. Just return a generic massage like 
             //Password and Email are not matching
            // var jwtTokenResponse = await GenerateJwtToken(user);
+
+            // If all case checks our U generate Jwt  flow 
             var jwtTokenResponse = await _tokenService.GenerateJwtToken(user);
             //return new UserManagerResponse
             //{
@@ -508,5 +516,5 @@ namespace StyleONApi.AuthServices
     }
 
 
-
+    // Write a custom method for Email Checker insteard of having to repaet urself
 }

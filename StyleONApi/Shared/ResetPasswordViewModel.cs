@@ -27,5 +27,8 @@ namespace Shared
         [Required]
         public string Token { get; set; }
 
+
+        // Reset Password could have inhrtitrd from Register view Model
+
     }
 }

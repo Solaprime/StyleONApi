@@ -4,6 +4,17 @@
         <name>StyleONApi</name>
     </assembly>
     <members>
+        <member name="M:StyleONApi.AuthServices.JwtTokenService.GetAllValidClaims(StyleONApi.Entities.ApplicationUser)">
+            <summary>
+            This method Basically get all clains for the user 
+            Depending on Ur use case Scenarion u can have Different means to work with Claims
+            the claims  in these method is in three Part, Claims from thr user ItSelf,
+            claims from the userManager flow,
+            and claims from the Role flow 
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
         <member name="M:StyleONApi.Controllers.AdminController.DeleteUser(System.String)">
             <summary>
             Deleting a User

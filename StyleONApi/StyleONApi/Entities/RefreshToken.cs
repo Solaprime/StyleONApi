@@ -11,8 +11,11 @@ namespace StyleONApi.Entities
     {
 
         public int Id { get; set; }
+        //Always assocaite an Id with the user ,i .e  A refreshtoken shoulb be assocaited wit a userId
         public string UserId { get; set; }
+        //The RefreshToken itself 
         public string Token { get; set; }
+        //The Id of the Jwt u wish to refresh 
         public string JwtId { get; set; }
         public bool IsUsed { get; set; }
         public bool IsRevorked { get; set; }
