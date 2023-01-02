@@ -37,5 +37,8 @@ namespace StyleONApi.Entities
         public Guid ApplicationUserId { get; set; }
 
 
+
+
+        //Refactor the way u refacto Dispacth flow 
     }
 }

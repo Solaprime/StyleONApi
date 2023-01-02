@@ -288,83 +288,113 @@ namespace StyleONApi.AuthServices
 
 
 
+        public async  Task<UserManagerResponse> RegisterasDispatch(Dispatch dispatch)
+        {
+            var user_Exist = await _userManager.FindByEmailAsync(dispatch.Email);
+            if (user_Exist == null)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "This user, with this Email  does not   exist",
+                    IsSuccess = false,
+                };
+            }
+            var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppSeller");
+            if (roleSeller)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "This user, with this Email  has registered as a Dispatch",
+                    IsSuccess = false,
+                };
+            }
+
+            var roleEmail = new RoleEmail { Email = dispatch.Email, RoleName = "AppSeller" };
+            var result = await AddUserToRole(roleEmail);
+
+            //await _context.Sellers.AddAsync(dispatch);
+            //await _context.SaveChangesAsync();
+            return result;
+
+        }
 
 
-        //public async  Task<UserManagerResponse> RegisterasSeller(Seller seller)
-        //{
-        //    //Email Check
-        //    var user_Exist = await _userManager.FindByEmailAsync(seller.Email);
-        //    if (user_Exist == null)
-        //    {
-        //        return new UserManagerResponse
-        //        {
-        //            Message = "This user, with this Email  does not   exist",
-        //            IsSuccess = false,
-        //        };
-        //    }
+        public async Task<UserManagerResponse> RegisterasSeller(Seller seller)
+        {
+            //Email Check
+            var user_Exist = await _userManager.FindByEmailAsync(seller.Email);
+            if (user_Exist == null)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "This user, with this Email  does not   exist",
+                    IsSuccess = false,
+                };
+            }
 
-        //    // Check if email has been added to seller tole before
+            // Check if email has been added to seller tole before
 
-        //    var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppSeller");
-        //    if (roleSeller)
-        //    {
-        //        return new UserManagerResponse
-        //        {
-        //            Message = "This user, with this Email  has registered as a seller",
-        //            IsSuccess = false,
-        //        };
-        //    }
-        //    // Some Info to pass in
+            var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppSeller");
+            if (roleSeller)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "This user, with this Email  has registered as a seller",
+                    IsSuccess = false,
+                };
+            }
+            // Some Info to pass in
 
+            // Like Date tiem regissters and other info to pass in
 
-        //    //Genrate seeler Id
-
-
-
-        //    //Add seller to role
-        //    var roleEmail = new RoleEmail { Email = seller.Email, RoleName = "AppSeller" };
-        //    var result = await AddUserToRole(roleEmail);
-
-        //    //U need to connect the userId
-
-
-        //    //  var httpContext = new HttpContext();
-        //    var identity = _httpContext.User.Identity as ClaimsIdentity;
-        // //   var identity = HttpContext.User.Identity as ClaimsIdentity;
-              
-        //    if (identity == null)
-        //    {
-
-        //        return new UserManagerResponse
-        //        {
-        //            Message = "Something bad occured has occured as ",
-        //            IsSuccess = false,
-        //        };
-        //        //Getting all claims
-        //        // IEnumerable<Claim> claims = identity.Claims;
-
-        //    }
-            
-
-        //    else
-        //    {
-        //        var userId = identity.FindFirst("Id").Value;
-        //        seller.ApplicationUserId = Guid.Parse(userId);
-
-        //    }
+            //Genrate seeler Id
 
 
 
+            //Add seller to role
+            var roleEmail = new RoleEmail { Email = seller.Email, RoleName = "AppSeller" };
+            var result = await AddUserToRole(roleEmail);
+
+            //U need to connect the userId
 
 
-        //    await _context.Sellers.AddAsync(seller);
-        //    await _context.SaveChangesAsync();
-        //    return result;
+            //  var httpContext = new HttpContext();
+          //  var identity = _httpContext.User.Identity as ClaimsIdentity;
+            //   var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            //if (identity == null)
+            //{
+
+            //    return new UserManagerResponse
+            //    {
+            //        Message = "Something bad occured has occured as ",
+            //        IsSuccess = false,
+            //    };
+            //    //Getting all claims
+            //    // IEnumerable<Claim> claims = identity.Claims;
+
+            //}
+
+
+            //else
+            //{
+            //    var userId = identity.FindFirst("Id").Value;
+            //    seller.ApplicationUserId = Guid.Parse(userId);
+
+            //}
 
 
 
 
-        //}
+
+            await _context.Sellers.AddAsync(seller);
+            await _context.SaveChangesAsync();
+            return result;
+
+
+
+
+        }
 
 
         public async Task<SimpleResponse> UpdateSeller(Seller seller)
@@ -621,7 +651,7 @@ namespace StyleONApi.AuthServices
 
         }
 
-      
+        
     }
 
 

@@ -17,6 +17,7 @@ namespace StyleONApi.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Seller> Sellers { get; set; }
+        public DbSet<Dispatch> Dispatchs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

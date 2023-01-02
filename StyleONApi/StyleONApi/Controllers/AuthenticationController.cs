@@ -13,6 +13,7 @@ using StyleONApi.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace StyleONApi.Controllers
@@ -228,19 +229,32 @@ namespace StyleONApi.Controllers
             return BadRequest(result);
         }
 
-        //From Upddate seeler we can try assign the role 
-        // [HttpPost("RegisterasSeller")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        //public async Task<IActionResult> RegisterasSeller([FromBody] SellerForUpdateDto sellerDto)
-        //{
-        //    var selllerToUpdate = _mapper.Map<Seller>(sellerDto);
-        //    var result = await _userService.RegisterasSeller(selllerToUpdate);
-        //    if (result.IsSuccess)
-        //    {
-        //        return Ok(result.Message);
-        //    }
-        //    return BadRequest(result);
-        //}
+        //From Upddate seeler we can try assign the role
+         [HttpPost("RegisterasSeller")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> RegisterasSeller([FromBody] SellerForUpdateDto sellerDto)
+        {
+               var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity == null)
+            {
+
+                return BadRequest("Something Bad occured");
+              
+                //Getting all claims
+                // IEnumerable<Claim> claims = identity.Claims;
+
+            }
+            var resultId = identity.FindFirst("Id").Value;
+            var selllerToUpdate = _mapper.Map<Seller>(sellerDto);
+            selllerToUpdate.ApplicationUserId = Guid.Parse(resultId);
+            var result = await _userService.RegisterasSeller(selllerToUpdate);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result);
+        }
 
 
 
