@@ -21,6 +21,7 @@ namespace StyleONApi.AuthServices
 
        
         Task<SimpleResponse> UpdateSeller(Seller seller);
+      //  Task<UserManagerResponse> RegisterasSeller(Seller seller);
         Task<SimpleResponse> FindAllUserInRole(string roleName);
 
        // Flow to confirm email

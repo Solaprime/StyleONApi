@@ -12,5 +12,7 @@ namespace StyleONApi.Model
         public string Email { get; set; }
         public string StoreName { get; set; }
         public DateTime DateRegistered { get; set; }
+        //Store Adress
+        // Account Number 
     }
 }

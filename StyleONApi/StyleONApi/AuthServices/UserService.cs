@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿//using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,9 @@ namespace StyleONApi.AuthServices
         private readonly ITokenService _tokenService;
         private readonly TokenValidationParameters _tokenValidationParams;
 
+        // HttpContext
+      //  private readonly HttpContext _httpContext;
+
 
 
         public UserService(UserManager<ApplicationUser> userManger,
@@ -37,9 +41,9 @@ namespace StyleONApi.AuthServices
               ITokenService service,
             TokenValidationParameters tokenValidationParams,
             ISellerRepository sellerRepository,
-
        StyleONContext context)
         {
+            
             _tokenService = service;
             _userManager = userManger;
             _configuration = configuration;
@@ -47,6 +51,7 @@ namespace StyleONApi.AuthServices
             _context = context;
             _sellerRepository = sellerRepository;
             _tokenValidationParams = tokenValidationParams;
+          //  _httpContext = httpContext;
 
 
         }
@@ -117,8 +122,8 @@ namespace StyleONApi.AuthServices
                     return new UserManagerResponse
                     {
                         IsSuccess = false,
-                         Message = $"The role {rolename} was not  created, Kindly try Again "
-                      //  Message =   roleResult.Errors.ToString()
+                        Message = $"The role {rolename} was not  created, Kindly try Again "
+                        //  Message =   roleResult.Errors.ToString()
                     };
                 }
             }
@@ -156,7 +161,7 @@ namespace StyleONApi.AuthServices
 
                 return new UserManagerResponse
                 {
-                    Message = "No user with this Email exist in our Databse" ,
+                    Message = "No user with this Email exist in our Databse",
                     IsSuccess = false
                 };
 
@@ -174,7 +179,7 @@ namespace StyleONApi.AuthServices
             }
             // From above no nned to tell the user which is wrong. Just return a generic massage like 
             //Password and Email are not matching
-           // var jwtTokenResponse = await GenerateJwtToken(user);
+            // var jwtTokenResponse = await GenerateJwtToken(user);
 
             // If all case checks our U generate Jwt  flow 
             var jwtTokenResponse = await _tokenService.GenerateJwtToken(user);
@@ -217,7 +222,7 @@ namespace StyleONApi.AuthServices
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(identityUser, "AppUser");
-              //  var jwtTokenResponse = await GenerateJwtToken(identityUser);
+                //  var jwtTokenResponse = await GenerateJwtToken(identityUser);
                 var jwtTokenResponse = await _tokenService.GenerateJwtToken(identityUser);
                 //return new UserManagerResponse
                 //{
@@ -281,8 +286,86 @@ namespace StyleONApi.AuthServices
 
         }
 
-      
-     
+
+
+
+
+        //public async  Task<UserManagerResponse> RegisterasSeller(Seller seller)
+        //{
+        //    //Email Check
+        //    var user_Exist = await _userManager.FindByEmailAsync(seller.Email);
+        //    if (user_Exist == null)
+        //    {
+        //        return new UserManagerResponse
+        //        {
+        //            Message = "This user, with this Email  does not   exist",
+        //            IsSuccess = false,
+        //        };
+        //    }
+
+        //    // Check if email has been added to seller tole before
+
+        //    var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppSeller");
+        //    if (roleSeller)
+        //    {
+        //        return new UserManagerResponse
+        //        {
+        //            Message = "This user, with this Email  has registered as a seller",
+        //            IsSuccess = false,
+        //        };
+        //    }
+        //    // Some Info to pass in
+
+
+        //    //Genrate seeler Id
+
+
+
+        //    //Add seller to role
+        //    var roleEmail = new RoleEmail { Email = seller.Email, RoleName = "AppSeller" };
+        //    var result = await AddUserToRole(roleEmail);
+
+        //    //U need to connect the userId
+
+
+        //    //  var httpContext = new HttpContext();
+        //    var identity = _httpContext.User.Identity as ClaimsIdentity;
+        // //   var identity = HttpContext.User.Identity as ClaimsIdentity;
+              
+        //    if (identity == null)
+        //    {
+
+        //        return new UserManagerResponse
+        //        {
+        //            Message = "Something bad occured has occured as ",
+        //            IsSuccess = false,
+        //        };
+        //        //Getting all claims
+        //        // IEnumerable<Claim> claims = identity.Claims;
+
+        //    }
+            
+
+        //    else
+        //    {
+        //        var userId = identity.FindFirst("Id").Value;
+        //        seller.ApplicationUserId = Guid.Parse(userId);
+
+        //    }
+
+
+
+
+
+        //    await _context.Sellers.AddAsync(seller);
+        //    await _context.SaveChangesAsync();
+        //    return result;
+
+
+
+
+        //}
+
 
         public async Task<SimpleResponse> UpdateSeller(Seller seller)
         {
@@ -294,6 +377,7 @@ namespace StyleONApi.AuthServices
             // checj user exist'
             var user = await _userManager.FindByEmailAsync(seller.Email);
 
+            // You have not even added the seller to that role
             if (user != null)
             {
                 // check role
@@ -318,8 +402,29 @@ namespace StyleONApi.AuthServices
 
 
                     seller.SellerId = Guid.NewGuid();
+                    //var identity = HttpContext.User.Identity as ClaimsIdentity;
+                    //if (identity != null)
+                    //{
+                    //   var result = identity.FindFirst("Id").Value;
+
+
+
+                    //}
+
+                    //var identity = HttpContext.User.Identity as ClaimsIdentity;
+                    //if (identity != null)
+                    //{
+                    //    //Getting all claims
+                    //    // IEnumerable<Claim> claims = identity.Claims;
+                    //    var result = identity.FindFirst("Id").Value;
+                    //  //  return Ok(result);
+
+                    //}
+
                     _context.Sellers.Add(seller);
                     await _context.SaveChangesAsync();
+
+
                     // Send a Mail to seller telling them Dere details have been Updated
                     return new SimpleResponse
                     {
@@ -342,6 +447,9 @@ namespace StyleONApi.AuthServices
             // Genreate Id, add seller to use flow
             // Add to sellr table
         }
+        
+
+        
 
         public async Task<SimpleResponse> FindAllUserInRole(string roleName)
         {
@@ -513,6 +621,7 @@ namespace StyleONApi.AuthServices
 
         }
 
+      
     }
 
 

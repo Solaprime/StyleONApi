@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -214,16 +216,33 @@ namespace StyleONApi.Controllers
         //Refactor
         [HttpPost("UpdateSeller")]
         // [HttpPost("RegisterasSeller")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateSeller([FromBody] SellerForUpdateDto sellerDto)
         {
             var selllerToUpdate = _mapper.Map<Seller>(sellerDto);
-            var seller = await _userService.UpdateSeller(selllerToUpdate);
-            if (seller.IsSuccess)
+            var result = await _userService.UpdateSeller(selllerToUpdate);
+            if (result.IsSuccess)
             {
-                return Ok(seller.Message);
+                return Ok(result.Message);
             }
-            return BadRequest(seller);
+            return BadRequest(result);
         }
+
+        //From Upddate seeler we can try assign the role 
+        // [HttpPost("RegisterasSeller")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public async Task<IActionResult> RegisterasSeller([FromBody] SellerForUpdateDto sellerDto)
+        //{
+        //    var selllerToUpdate = _mapper.Map<Seller>(sellerDto);
+        //    var result = await _userService.RegisterasSeller(selllerToUpdate);
+        //    if (result.IsSuccess)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result);
+        //}
+
+
 
 
         // you hit the forget endpoint ang get token and Id

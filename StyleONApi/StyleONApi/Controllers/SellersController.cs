@@ -15,6 +15,7 @@ namespace StyleONApi.Controllers
     
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+  
     public class SellersController : ControllerBase
     {
         private readonly ISellerRepository _sellerrepository;
