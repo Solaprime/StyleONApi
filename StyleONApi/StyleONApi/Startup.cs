@@ -50,6 +50,7 @@ namespace StyleONApi
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<ISellerRepository, SellersRepository>();
+            services.AddScoped<IOrderService, OrderService>();
 
 
             services.AddDbContext<StyleONContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StyleONDb")).EnableSensitiveDataLogging());

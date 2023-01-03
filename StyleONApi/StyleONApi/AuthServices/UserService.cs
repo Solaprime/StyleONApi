@@ -299,7 +299,11 @@ namespace StyleONApi.AuthServices
                     IsSuccess = false,
                 };
             }
-            var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppSeller");
+
+            // For sellerfor update due to how i createed my flow
+            //i used seller id to extablish relationship between them httpcintext abd the Likes
+            dispatch.userId = user_Exist;
+            var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppDispatch");
             if (roleSeller)
             {
                 return new UserManagerResponse
@@ -309,11 +313,11 @@ namespace StyleONApi.AuthServices
                 };
             }
 
-            var roleEmail = new RoleEmail { Email = dispatch.Email, RoleName = "AppSeller" };
+            var roleEmail = new RoleEmail { Email = dispatch.Email, RoleName = "AppDispatch" };
             var result = await AddUserToRole(roleEmail);
 
-            //await _context.Sellers.AddAsync(dispatch);
-            //await _context.SaveChangesAsync();
+            await _context.Dispatchs.AddAsync(dispatch);
+            await _context.SaveChangesAsync();
             return result;
 
         }

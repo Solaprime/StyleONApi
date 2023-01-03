@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,8 +16,10 @@ namespace StyleONApi.Entities
         public ApplicationUser User { get; set; }
 
     }
-    public class Orders 
+    public class Order
     {
+        [Key]
+        [Required]
         public Guid OrderId { get; set; }
       
         
@@ -28,26 +31,30 @@ namespace StyleONApi.Entities
         public ModeOfDelivery DeliveryMode { get; set; }
 
         public Double  OrderPrice { get; set; }
-
+        [Required]
         public Double TotalPrice{ get; set; }
 
+        [Required]
         public List<OrderItem> OrderItems { get; set; }
         //U need to asign a application userId
       
-        public Guid ApplicationUserId { get; set; }
+      //  public Guid ApplicationUserId { get; set; }
 
         public OrderStatus OrderState { get; set; }
 
+        [ForeignKey("UserId")]
+        public ApplicationUser userFlow { get; set; }
 
 
-        //[ForeignKey("SellerId")]
-        //public Seller Seller { get; set; }
+
+
     }
 
     //
       public class OrderItem
       {
-     
+
+        public int OrderItemId { get; set; }
         public Guid SellerId { get; set; }
         public Guid ProductId { get; set; }
         public double ProductPrice { get; set; }

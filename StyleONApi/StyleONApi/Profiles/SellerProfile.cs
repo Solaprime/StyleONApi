@@ -17,9 +17,13 @@ namespace StyleONApi.Profiles
             CreateMap<Seller, SellerDto>();
             CreateMap<Seller, SellerForUpdateDto>();
             CreateMap<Seller, SellerDtoForProduct>();
-          //  CreateMap<ProductWithSellerDto, Seller>();
+            //  CreateMap<ProductWithSellerDto, Seller>();
 
-           // CreateMap<SellerDto, Seller>();
+            // CreateMap<SellerDto, Seller>();
+
+
+            CreateMap<DispatchForUpdateDto, Dispatch>();
+            CreateMap<OrderDto, Order>();
         }
     }
 }

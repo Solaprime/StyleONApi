@@ -256,6 +256,33 @@ namespace StyleONApi.Controllers
             return BadRequest(result);
         }
 
+        [HttpPost("Registerasdispatch")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> Registerasdispatch([FromBody] DispatchForUpdateDto dispatchDto)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity == null)
+            {
+
+                return BadRequest("Something Bad occured");
+
+                //Getting all claims
+                // IEnumerable<Claim> claims = identity.Claims;
+
+            }
+            var resultId = identity.FindFirst("Id").Value;
+            var dispatchToUpdate = _mapper.Map<Dispatch>(dispatchDto);
+            //check out this flow
+           // dispatchToUpdate.userId = Guid.Parse(resultId);
+
+            var result = await _userService.RegisterasDispatch(dispatchToUpdate);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result);
+        }
 
 
 

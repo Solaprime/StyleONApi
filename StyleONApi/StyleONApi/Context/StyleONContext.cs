@@ -18,11 +18,14 @@ namespace StyleONApi.Context
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<Dispatch> Dispatchs { get; set; }
+        public DbSet<Order> Orders { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
+            //  modelBuilder.Entity<OrderItem>().HasNoKey();
         }
+
+        
     }
 }
 
