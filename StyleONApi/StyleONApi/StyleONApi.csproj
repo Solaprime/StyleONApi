@@ -16,6 +16,8 @@
     <Compile Remove="Migrations\20220719104813_AddingSellerFlow.Designer.cs" />
     <Compile Remove="Migrations\20220720112809_TestVibes.cs" />
     <Compile Remove="Migrations\20220720112809_TestVibes.Designer.cs" />
+    <Compile Remove="Migrations\20230103123548_testdemo.cs" />
+    <Compile Remove="Migrations\20230103123548_testdemo.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

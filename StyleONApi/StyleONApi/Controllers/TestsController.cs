@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using StyleONApi.AuthServices;
+using StyleONApi.Context;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,11 +19,14 @@ namespace StyleONApi.Controllers
     
     public class TestsController : ControllerBase
     {
+        private readonly IOrderService _order;
+        private readonly StyleONContext  _context;
 
 
-        public TestsController()
+        public TestsController(IOrderService order, StyleONContext context)
         {
-            
+            _order = order;
+            _context = context;
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -61,6 +66,32 @@ namespace StyleONApi.Controllers
         public IActionResult GetFlow()
         {
             return Ok("no Authorization");
+        }
+
+
+        //[HttpGet("{sellerId}/products/{productId}")]
+        //public IActionResult TestSeller(Guid sellerId, Guid productId)
+        //{
+        //    var result = _order.CheckProduct(sellerId, productId);
+        //    if (result == null)
+        //    {
+        //        return BadRequest("Something bad happend");
+        //    }
+
+        //    return Ok(result);
+        //}
+
+
+        [HttpGet("{sellerId}")]
+        public IActionResult TestSeller(Guid sellerId)
+        {
+            var result = _context.Sellers.FirstOrDefault(c => c.SellerId == sellerId);
+            if (result == null)
+            {
+                return BadRequest("Something bad happend");
+            }
+
+            return Ok(result);
         }
     }
 }

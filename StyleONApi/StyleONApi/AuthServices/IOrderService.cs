@@ -14,5 +14,9 @@ namespace StyleONApi.AuthServices
         //Pick Up Order
         //Return Order
         Task<UserManagerResponse> CreateOrder(Order order);
+        Task<Product> CheckProduct(Guid sellerId, Guid productId);
+        //
+        //Task<bool> CheckProduct(Guid sellerId, Guid productId);
+        Task<Order> GetOrder(Guid orderId);
     }
 }

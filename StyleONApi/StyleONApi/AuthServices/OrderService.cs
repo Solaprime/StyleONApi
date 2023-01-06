@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared;
 using StyleONApi.Context;
 using StyleONApi.Entities;
 using System;
@@ -16,6 +17,22 @@ namespace StyleONApi.AuthServices
             _context = context;
         }
 
+        public  async Task<Product> CheckProduct(Guid sellerId, Guid productId)
+        {
+            if (sellerId== null)
+            {
+                throw new ArgumentNullException(nameof(sellerId));
+            }
+            var confirmedProduct =  await _context.Products.
+                Where(s => s.ProductId == productId && s.SellerId == sellerId).FirstOrDefaultAsync();
+            if (confirmedProduct != null)
+            {
+                return confirmedProduct;
+            }
+
+            return null;
+        }
+
         public  async Task<UserManagerResponse> CreateOrder(Order order)
         {
             // Receive the Order 
@@ -28,16 +45,78 @@ namespace StyleONApi.AuthServices
             // Create Order
 
             //Create total Price for Order
-    
-            foreach (var orderprice in order.OrderItems)
-            {
-                order.TotalPrice += orderprice.ProductPrice;
-            }
-            await _context.Orders.AddAsync(order);
-             await _context.SaveChangesAsync();
-            return new UserManagerResponse { IsSuccess = true, Message = "Order Created Sucessfully" };
 
-            // 
+            //foreach (var orderprice in order.OrderItems)
+            //{
+
+            //    order.TotalPrice += orderprice.ProductPrice *  orderprice.Quantity;
+            //}
+
+            // I need the Price, Quantity
+
+            foreach (var singleorder in order.OrderItems)
+            {
+                ///Retrieve the Price of that order
+                ///Multiply by quantity
+                ///add for every Iteration
+                var priceOfEachItem =  await _context.Products
+                  .Where(s => s.ProductId == singleorder
+               .ProductId && s.SellerId == singleorder.SellerId).Select(s => new Pricedemo(s.Price)).FirstOrDefaultAsync();
+
+                var singleorderPrice = priceOfEachItem.Price * singleorder.Quantity;
+                order.TotalPrice += singleorderPrice; 
+            }
+            await _context.Orders.AddAsync(order); 
+             await _context.SaveChangesAsync();
+            return new UserManagerResponse { IsSuccess = true, Message = "Order Created Sucessfully",
+                Id = order.OrderId.ToString()
+             };
+
+            //  //Meand to reafcto Price individaul Price by Quantity, Price of Product multiplied by quantity
+
+            //Check if sellerId amd ProductId are Marching 
+            // a custom method To retrive a product a product and check it Price 
+
+            //Cherck if other prop like ProductPrice are matchin
+
+
+
+
+            // For performance sake, anytime i retireve a product i only
+           // need the Price of the Product, the Quantiy comes from the OrderITem
+        }
+
+
+        //Make sure the orderItem has iNfo of the Product return
+        public async  Task<Order> GetOrder(Guid orderId)
+        {
+            if (orderId == null)
+            {
+                throw new ArgumentNullException(nameof(orderId));
+            }
+
+            var order = await  _context.Orders.Include(s=> s.OrderItems)
+                .FirstOrDefaultAsync(s => s.OrderId == orderId);
+            return order;
         }
     }
+
+
+
+
+     public struct Pricedemo
+    {
+        public Pricedemo( Double price)
+        {
+            Price = price;
+        }
+        public Double Price;
+
+    }
+
+  
+
 }
+
+//Get Order.
+//Test Order with Product that has a price 

@@ -57,10 +57,20 @@ namespace StyleONApi.Entities
         public int OrderItemId { get; set; }
         public Guid SellerId { get; set; }
         public Guid ProductId { get; set; }
-        public double ProductPrice { get; set; }
+      //  public double ProductPrice { get; set; }
         public int Quantity { get; set; }
        }
 
+
+    //I dont need the ProductPrice to be sent to the Db 
+    //Whe you query the Producct rhe Prie shoul be Returned 
+    //So order item should only contain,
+
+    //selleriD, ProductID and Quantity
+
+    //Meand to reafcto Price individaul Price by Quantity, Price of Product multiplied by quantity
+
+    
 
     //public Specification poductSpecification { get; set; }
     //public ModeOfDelivery DeliveryMode { get; set; }

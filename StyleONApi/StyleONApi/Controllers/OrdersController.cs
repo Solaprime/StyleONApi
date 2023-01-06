@@ -32,6 +32,7 @@ namespace StyleONApi.Controllers
         }
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //A mean to Return the Order
         public async Task<IActionResult> CreateOrder([FromBody]OrderDto order)
         {
 
@@ -58,11 +59,21 @@ namespace StyleONApi.Controllers
             var result =  await _orderService.CreateOrder(ordertoCreate);
             if (result.IsSuccess)
             {
-                return Ok(result.Message);
+                return Ok(result);
 
                 // You can mapp stuff to return the Order created
             }
             return BadRequest("Bad stuff happends");
         }
+
+
+        [HttpGet("{orderid}")]
+        public async Task<ActionResult<OrderDtoToReturn>> GetOrder(Guid orderid)
+        {
+            var orders = await _orderService.GetOrder(orderid);
+            var orderToReturn = _mapper.Map<OrderDtoToReturn>(orders);
+            return Ok(orderToReturn);
+        }
     }
 }
+ 

@@ -145,7 +145,7 @@ namespace StyleONApi.AuthServices
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(5),    //AddSeconds(20) for test sake
+                Expires = DateTime.Now.AddMinutes(20),    //AddSeconds(20) for test sake
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature),
                 
