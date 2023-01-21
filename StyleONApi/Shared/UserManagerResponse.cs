@@ -18,5 +18,8 @@ namespace Shared
         public DateTime? ExpiredDate { get; set; }
 
         public object ObjectToReturn { get; set; }
+        public string Id { get; set; }
+
+        //Since UserManager Response inherot from Simple Manager Response some Property are repeating
     }
 }

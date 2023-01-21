@@ -5,25 +5,30 @@ using System.Text;
 
 namespace Shared
 {
-    public class RegisterViewModel
+    public class ResetPasswordViewModel
     {
+
         [Required]
         [EmailAddress]
         [StringLength(50)]
         public string Email { get; set; }
         [Required]
-        [StringLength(50, MinimumLength =5)]
+        [StringLength(50, MinimumLength = 5)]
         [DataType(DataType.Password)]
-
-        public string PassWord { get; set; }
+        public string Password { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 5)]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
-        [Compare("PassWord",
-            ErrorMessage = " confirm Password and Paassword dont match")]
-
+        [Compare("Password",
+            ErrorMessage = "Tested a new Data Attribute confirm Password and Paassword dont match")]
         public string ConfirmPassword { get; set; }
+        [Required]
+        public string Token { get; set; }
+
+
+        // Reset Password could have inhrtitrd from Register view Model
+
     }
 }

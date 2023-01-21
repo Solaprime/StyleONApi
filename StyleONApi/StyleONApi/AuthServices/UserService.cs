@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿//using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -26,32 +28,37 @@ namespace StyleONApi.AuthServices
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly StyleONContext _context;
         private readonly ISellerRepository _sellerRepository;
-
+        private readonly ITokenService _tokenService;
         private readonly TokenValidationParameters _tokenValidationParams;
+
+        // HttpContext
+      //  private readonly HttpContext _httpContext;
 
 
 
         public UserService(UserManager<ApplicationUser> userManger,
        IConfiguration configuration, RoleManager<IdentityRole> roleManager,
-
+              ITokenService service,
             TokenValidationParameters tokenValidationParams,
             ISellerRepository sellerRepository,
-
        StyleONContext context)
         {
+            
+            _tokenService = service;
             _userManager = userManger;
             _configuration = configuration;
             _roleManager = roleManager;
             _context = context;
             _sellerRepository = sellerRepository;
             _tokenValidationParams = tokenValidationParams;
+          //  _httpContext = httpContext;
 
 
         }
 
         public async Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail)
         {
-
+            // Check if user with that email Exist.
             var user = await _userManager.FindByEmailAsync(roleEmail.Email);
             if (user == null)
             {
@@ -62,7 +69,7 @@ namespace StyleONApi.AuthServices
                 };
             }
 
-
+            // Check if the Role you wish to add the user to Exist 
             var roleExist = await _roleManager.RoleExistsAsync(roleEmail.RoleName);
             if (!roleExist)
             {
@@ -97,14 +104,16 @@ namespace StyleONApi.AuthServices
         public async Task<UserManagerResponse> CreateRole(string rolename)
         {
             var roleExist = await _roleManager.RoleExistsAsync(rolename);
+            // If Role Does not exist ,
             if (!roleExist)
             {
+                // Create the Role 
                 var roleResult = await _roleManager.CreateAsync(new IdentityRole(rolename));
                 if (roleResult.Succeeded)
                 {
                     return new UserManagerResponse
                     {
-                        Message = $"The role {rolename} has been succeede succesfully",
+                        Message = $"The role {rolename} has been Created succesfully",
                         IsSuccess = true,
                     };
                 }
@@ -113,14 +122,15 @@ namespace StyleONApi.AuthServices
                     return new UserManagerResponse
                     {
                         IsSuccess = false,
-                        Message = $"The role {rolename} was not  created, Kindly try Again"
+                        Message = $"The role {rolename} was not  created, Kindly try Again "
+                        //  Message =   roleResult.Errors.ToString()
                     };
                 }
             }
             return new UserManagerResponse
             {
                 IsSuccess = false,
-                Message = "Role already exist"
+                Message = "Role already exist, You can  not  create an Existing Role"
             };
 
         }
@@ -141,8 +151,10 @@ namespace StyleONApi.AuthServices
 
         }
 
+
         public async Task<UserManagerResponse> LoginUserAsync(LoginViewModel model)
         {
+            // Check if user with Email with Email Wxist 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -154,6 +166,7 @@ namespace StyleONApi.AuthServices
                 };
 
             }
+            // Check user Passsowrd
             var result = await _userManager.CheckPasswordAsync(user, model.PassWord);
             if (!result)
             {
@@ -164,7 +177,12 @@ namespace StyleONApi.AuthServices
                 };
 
             }
-            var jwtTokenResponse = await GenerateJwtToken(user);
+            // From above no nned to tell the user which is wrong. Just return a generic massage like 
+            //Password and Email are not matching
+            // var jwtTokenResponse = await GenerateJwtToken(user);
+
+            // If all case checks our U generate Jwt  flow 
+            var jwtTokenResponse = await _tokenService.GenerateJwtToken(user);
             //return new UserManagerResponse
             //{
             //    Message = "Login Succesfful ",
@@ -188,7 +206,7 @@ namespace StyleONApi.AuthServices
             {
                 return new UserManagerResponse
                 {
-                    Message = "This user already exist",
+                    Message = "This user, with this Email  already exist",
                     IsSuccess = false,
                 };
             }
@@ -204,7 +222,8 @@ namespace StyleONApi.AuthServices
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(identityUser, "AppUser");
-                var jwtTokenResponse = await GenerateJwtToken(identityUser);
+                //  var jwtTokenResponse = await GenerateJwtToken(identityUser);
+                var jwtTokenResponse = await _tokenService.GenerateJwtToken(identityUser);
                 //return new UserManagerResponse
                 //{
                 //    Message = "User Created Succesfully",
@@ -215,7 +234,7 @@ namespace StyleONApi.AuthServices
             }
             return new UserManagerResponse
             {
-                Message = "Unable to create user",
+                Message = "Unable to create user, Kindly try again",
                 IsSuccess = false,
                 Error = result.Errors.Select(e => e.Description),
 
@@ -243,7 +262,7 @@ namespace StyleONApi.AuthServices
             {
                 return new UserManagerResponse
                 {
-                    Message = "Role can not be Found",
+                    Message = "Role can not be Found, this given role cant be found.",
                     IsSuccess = false
                 };
             }
@@ -267,266 +286,120 @@ namespace StyleONApi.AuthServices
 
         }
 
-        // private async Task<string> GenerateGJwtToken(IDentityUser user)
-        // private async Task<string> GenerateJwtToken(ApplicationUser user)
-        private async Task<UserManagerResponse> GenerateJwtToken(ApplicationUser user)
+
+
+        public async  Task<UserManagerResponse> RegisterasDispatch(Dispatch dispatch)
         {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
-            // gET all valid claims for a user
-            var claims = await GetAllValidClaims(user);
-            var tokenDescriptor = new SecurityTokenDescriptor()
+            var user_Exist = await _userManager.FindByEmailAsync(dispatch.Email);
+            if (user_Exist == null)
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(5),    //AddSeconds(20) for test sake
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
-            };
+                return new UserManagerResponse
+                {
+                    Message = "This user, with this Email  does not   exist",
+                    IsSuccess = false,
+                };
+            }
 
-
-
-
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            var jwtToken = jwtTokenHandler.WriteToken(token);
-
-            var refreshToken = new RefreshToken()
+            // For sellerfor update due to how i createed my flow
+            //i used seller id to extablish relationship between them httpcintext abd the Likes
+            dispatch.userId = user_Exist;
+            var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppDispatch");
+            if (roleSeller)
             {
-                JwtId = token.Id,
-                IsUsed = false,
-                IsRevorked = false,
-                UserId = user.Id,
-                AddedDate = DateTime.UtcNow,
-                ExpiryDate = DateTime.UtcNow.AddMonths(6),
-                Token = RandomString(35) + Guid.NewGuid()
-            };
+                return new UserManagerResponse
+                {
+                    Message = "This user, with this Email  has registered as a Dispatch",
+                    IsSuccess = false,
+                };
+            }
 
+            var roleEmail = new RoleEmail { Email = dispatch.Email, RoleName = "AppDispatch" };
+            var result = await AddUserToRole(roleEmail);
 
-            // Check thE ID property of Refrshtoken
-
-            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.Dispatchs.AddAsync(dispatch);
             await _context.SaveChangesAsync();
-
-
-            return new UserManagerResponse()
-            {
-                Token = jwtToken,
-                IsSuccess = true,
-                RefreshToken = refreshToken.Token
-            };
+            return result;
 
         }
 
 
-
-
-
-        // Getting all valid claims for the suer 
-        // Incase i ant to add a claim
-
-
-        private async Task<List<Claim>> GetAllValidClaims(ApplicationUser user)
+        public async Task<UserManagerResponse> RegisterasSeller(Seller seller)
         {
-            var claims = new List<Claim>
+            //Email Check
+            var user_Exist = await _userManager.FindByEmailAsync(seller.Email);
+            if (user_Exist == null)
             {
-                new Claim("Id", user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            // Getting the claims that we have assigned to the user
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            claims.AddRange(userClaims);
-
-            // Get the user role and add it to the claims
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            foreach (var userRole in userRoles)
-            {
-                var role = await _roleManager.FindByNameAsync(userRole);
-
-                if (role != null)
+                return new UserManagerResponse
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, userRole));
-
-                    var roleClaims = await _roleManager.GetClaimsAsync(role);
-                    foreach (var roleClaim in roleClaims)
-                    {
-                        claims.Add(roleClaim);
-                    }
-                }
+                    Message = "This user, with this Email  does not   exist",
+                    IsSuccess = false,
+                };
             }
 
-            return claims;
-        }
+            // Check if email has been added to seller tole before
 
-
-
-
-        private string RandomString(int length)
-        {
-            var random = new Random();
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(x => x[random.Next(x.Length)]).ToArray());
-        }
-
-
-
-
-        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-        {
-            var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
-
-            return dateTimeVal;
-        }
-
-
-
-
-
-
-        // Method to Genrate and RefreshToken
-        public async Task<UserManagerResponse> VerifyAndGenerateToken(TokenRequest tokenRequest)
-        {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-            try
+            var roleSeller = await _userManager.IsInRoleAsync(user_Exist, "AppSeller");
+            if (roleSeller)
             {
-                // Validation 1 - Validation JWT token format
-                _tokenValidationParams.ValidateLifetime = false;
-                var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParams, out var validatedToken);
-                _tokenValidationParams.ValidateLifetime = true;
-
-                // Validation 2 - Validate encryption alg
-                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                return new UserManagerResponse
                 {
-                    // To check Validation Algoriothm
-                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
-
-                    if (result == false)
-                    {
-                        return null;
-                    }
-                }
-
-                // Validation 3 - validate expiry date
-                var utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-
-                var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
-
-                if (expiryDate > DateTime.UtcNow)
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Token has not yet expired"
-                        }
-                    };
-                }
-
-                // validation 4 - validate existence of the token
-                var storedToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);
-
-                if (storedToken == null)
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Token does not exist"
-                        }
-                    };
-                }
-
-                // Validation 5 - validate if used
-                if (storedToken.IsUsed)
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Token has been used"
-                        }
-                    };
-                }
-
-                // Validation 6 - validate if revoked
-                if (storedToken.IsRevorked)
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Token has been revoked"
-                        }
-                    };
-                }
-
-                // Validation 7 - validate the id
-                var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-
-                if (storedToken.JwtId != jti)
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Token doesn't match"
-                        }
-                    };
-                }
-
-                // Validation 8 - validate stored token expiry date
-                if (storedToken.ExpiryDate < DateTime.UtcNow)
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Refresh token has expired"
-                        }
-                    };
-                }
-
-                // update current token 
-
-                storedToken.IsUsed = true;
-                _context.RefreshTokens.Update(storedToken);
-                await _context.SaveChangesAsync();
-
-                // Generate a new token
-                var dbUser = await _userManager.FindByIdAsync(storedToken.UserId);
-                return await GenerateJwtToken(dbUser);
+                    Message = "This user, with this Email  has registered as a seller",
+                    IsSuccess = false,
+                };
             }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Lifetime validation failed. The token is expired."))
-                {
+            // Some Info to pass in
 
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Token has expired please re-login"
-                        }
-                    };
+            // Like Date tiem regissters and other info to pass in
 
-                }
-                else
-                {
-                    return new UserManagerResponse()
-                    {
-                        IsSuccess = false,
-                        Error = new List<string>() {
-                            "Something went wrong."
-                        }
-                    };
-                }
-            }
+            //Genrate seeler Id
+
+
+
+            //Add seller to role
+            var roleEmail = new RoleEmail { Email = seller.Email, RoleName = "AppSeller" };
+            var result = await AddUserToRole(roleEmail);
+
+            //U need to connect the userId
+
+
+            //  var httpContext = new HttpContext();
+          //  var identity = _httpContext.User.Identity as ClaimsIdentity;
+            //   var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            //if (identity == null)
+            //{
+
+            //    return new UserManagerResponse
+            //    {
+            //        Message = "Something bad occured has occured as ",
+            //        IsSuccess = false,
+            //    };
+            //    //Getting all claims
+            //    // IEnumerable<Claim> claims = identity.Claims;
+
+            //}
+
+
+            //else
+            //{
+            //    var userId = identity.FindFirst("Id").Value;
+            //    seller.ApplicationUserId = Guid.Parse(userId);
+
+            //}
+
+
+
+
+
+            await _context.Sellers.AddAsync(seller);
+            await _context.SaveChangesAsync();
+            return result;
+
+
+
+
         }
+
 
         public async Task<SimpleResponse> UpdateSeller(Seller seller)
         {
@@ -538,6 +411,7 @@ namespace StyleONApi.AuthServices
             // checj user exist'
             var user = await _userManager.FindByEmailAsync(seller.Email);
 
+            // You have not even added the seller to that role
             if (user != null)
             {
                 // check role
@@ -556,14 +430,35 @@ namespace StyleONApi.AuthServices
 
                         };
                     }
-                
+
                     // Finish
 
 
 
-                 seller.SellerId = Guid.NewGuid();
+                    seller.SellerId = Guid.NewGuid();
+                    //var identity = HttpContext.User.Identity as ClaimsIdentity;
+                    //if (identity != null)
+                    //{
+                    //   var result = identity.FindFirst("Id").Value;
+
+
+
+                    //}
+
+                    //var identity = HttpContext.User.Identity as ClaimsIdentity;
+                    //if (identity != null)
+                    //{
+                    //    //Getting all claims
+                    //    // IEnumerable<Claim> claims = identity.Claims;
+                    //    var result = identity.FindFirst("Id").Value;
+                    //  //  return Ok(result);
+
+                    //}
+
                     _context.Sellers.Add(seller);
                     await _context.SaveChangesAsync();
+
+
                     // Send a Mail to seller telling them Dere details have been Updated
                     return new SimpleResponse
                     {
@@ -586,6 +481,9 @@ namespace StyleONApi.AuthServices
             // Genreate Id, add seller to use flow
             // Add to sellr table
         }
+        
+
+        
 
         public async Task<SimpleResponse> FindAllUserInRole(string roleName)
         {
@@ -619,5 +517,147 @@ namespace StyleONApi.AuthServices
             };
         }
         // Replacre the response and context
+
+
+
+        //// Flow to confirm email
+        //public async Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token)
+        //{
+        //    // It is in two part, If user regsuter succedffully we genrae a token den send to the user email to confirm.
+        //    var user = await _userManager.FindByIdAsync(userId);
+        //    if (user == null)
+        //    {
+        //        return new UserManagerResponse
+        //        {
+        //            IsSuccess = false,
+        //            Message = "User can not be found",
+        //        };
+        //    }
+        //    // U need to decode the toekn
+        //    var decodedToken = WebEncoders.Base64UrlDecode(token);
+        //    string normalToken = Encoding.UTF8.GetString(decodedToken);
+        //    var result = await _userManager.ConfirmEmailAsync(user, normalToken);
+        //    if (result.Succeeded)
+        //    {
+        //        return new UserManagerResponse
+        //        {
+        //            Message = "Email Confirmed Succesffully",
+        //            IsSuccess = true,
+        //        };
+        //    }
+        //    return new UserManagerResponse
+        //    {
+        //        IsSuccess = false,
+        //        Message = "Email did not confirm",
+        //        Error = result.Errors.Select(e => e.Description)
+        //    };
+        //}
+
+
+
+
+
+
+        public async Task<UserManagerResponse> ForgetPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    IsSuccess = false,
+                    Message = "No user with this email exist"
+                };
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            // this token mught contain some special charcters like forward slash, --- dat might not load well or be rejected on browser
+            // so we need to encode it
+            var encodedEmailToken = Encoding.UTF8.GetBytes(token);
+            var validToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
+            // If for web
+            //  we can generate a link to the website in a web page
+            //   this mail to send mail
+
+            //string Url = $"{_configuration["AppUrl"]}/ResetPassword?email={email}&token={validToken}";
+
+            //// send the url via the mail service
+            //await _emailService.SendEmailAsync(email, "Reset Password", "<h1>Follow the instructions to reset Your Password</h1>" +
+            //    $"<p>reset your password <a href='{Url}'>Click here bro</a></p>");
+
+            var userId = await _userManager.GetUserIdAsync(user);
+
+
+
+            //  var result = await _userManager.Ch
+            return new UserManagerResponse
+            {
+                IsSuccess = true,
+                // Message = "Reset Password Url has been sent to YOU succesfully"
+                Message = validToken,
+                Id = userId
+            };
+
+        }
+
+        //flow to ResetPassword Async
+        public async Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    IsSuccess = false,
+                    Message = "User can not be found",
+                };
+            }
+            var decodedToken = WebEncoders.Base64UrlDecode(model.Token);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+            var result = await _userManager.ResetPasswordAsync(user, normalToken, model.Password);
+            if (result.Succeeded)
+            {
+                return new UserManagerResponse
+                {
+                    IsSuccess = true,
+                    Message = "Password has been Resetted succesfully"
+                };
+            }
+            return new UserManagerResponse
+            {
+                IsSuccess = false,
+                Message = "Somwthing went wrong Kidlu try again later",
+                Error = result.Errors.Select(e => e.Description)
+            };
+
+        }
+
+
+        // find a meanse to coonstruct the claims pricncipal from the jwtToken  flow 
+        public async Task<UserManagerResponse> LogoutAsync(ApplicationUser user)
+        {
+            var refreshToken = await _context.RefreshTokens.Where(c => c.UserId == user.Id).FirstOrDefaultAsync();
+
+            if (refreshToken == null)
+            {
+                return new UserManagerResponse { IsSuccess = true };
+            }
+
+            _context.RefreshTokens.Remove(refreshToken);
+
+            var saveResponse = await _context.SaveChangesAsync();
+
+            if (saveResponse >= 0)
+            {
+                return new UserManagerResponse { IsSuccess = true };
+            }
+
+            return new UserManagerResponse { IsSuccess = false, Message = "Unable to logout user" };
+
+        }
+
+        
     }
+
+
+    // Write a custom method for Email Checker insteard of having to repaet urself
 }

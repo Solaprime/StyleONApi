@@ -11,8 +11,11 @@ namespace StyleONApi.Entities
     {
 
         public int Id { get; set; }
+        //Always assocaite an Id with the user ,i .e  A refreshtoken shoulb be assocaited wit a userId
         public string UserId { get; set; }
+        //The RefreshToken itself 
         public string Token { get; set; }
+        //The Id of the Jwt u wish to refresh 
         public string JwtId { get; set; }
         public bool IsUsed { get; set; }
         public bool IsRevorked { get; set; }
@@ -21,6 +24,12 @@ namespace StyleONApi.Entities
 
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
+
+
+        // whenenever the refreshtoken has been revoked always 
+        //always set the isrevoked property to false
+        //the token in this case is it the JWT TOKen or Refreshtoken 
+        // if it is refresh tpken it os best to hash it oh
 
     }
 }

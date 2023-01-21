@@ -15,6 +15,7 @@ namespace StyleONApi.Controllers
     
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+  
     public class SellersController : ControllerBase
     {
         private readonly ISellerRepository _sellerrepository;
@@ -25,7 +26,10 @@ namespace StyleONApi.Controllers
             _sellerrepository = sellerrepository;
             _mapper = mapper;
         }
-
+        /// <summary>
+        /// get all seller who has updated the form a verifcatiion process
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("GetAllUpdatedSellers")]
         public async Task<ActionResult<IEnumerable<SellerDto>>> GetAllSellers()
         {
@@ -33,7 +37,11 @@ namespace StyleONApi.Controllers
             var sellerToReturn = _mapper.Map<IEnumerable<SellerDto>>(result);
             return Ok(sellerToReturn);   
         }
-
+        /// <summary>
+        /// searching a seller by name or other parameter
+        /// </summary>
+        /// <param name="resourceParameters"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SellerDto>>> GetAllSellers(
             [FromQuery] SelllersResourceParameters resourceParameters)

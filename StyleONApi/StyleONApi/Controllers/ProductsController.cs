@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using StyleONApi.Repository;
@@ -21,15 +22,19 @@ namespace StyleONApi.Controllers
     //  [ApiConventionType(typeof(DefaultApiConventions))]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, AppSeller")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repository;
         private readonly IMapper _mapper;
-        public ProductsController(IProductRepository repository, IMapper mapper)
+        private readonly ILogger<ProductsController> _logger;
+
+        public ProductsController(IProductRepository repository, IMapper mapper,
+            ILogger<ProductsController> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger; 
         }
 
         /// <summary>
@@ -38,9 +43,10 @@ namespace StyleONApi.Controllers
         /// <param name="sellerId"></param>
         /// <param name="product"></param>
         /// <returns></returns>
+        /// Only a seller dat is login can post a product
         [HttpPost]
         [Consumes("application/json")]
-        // [Authorize(Roles ="AppSeller")]
+         [Authorize(Roles ="AppSeller")]
         // [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
         public async Task<ActionResult<ProductDtoTest>> CreateProduct(Guid sellerId, [FromBody] ProductForCreationDto product)
         {
@@ -90,6 +96,7 @@ namespace StyleONApi.Controllers
         ///
         /// </remarks>
 
+        // only a seller dat post a product can update that product
         [HttpPatch("{productId}")]
         // [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Edit))]
         public async Task<ActionResult> partiallyUpdateAProduct(Guid sellerId, Guid productId,
@@ -170,6 +177,7 @@ namespace StyleONApi.Controllers
             return Ok(_mapper.Map<ProductDtoTest>(result));
 
         }
+        // only a seller can delete a product, for various reasons
         [HttpDelete("{productId}")]
         public async  Task<ActionResult> DeleteProductForSeller(Guid sellerId, Guid productId)
         {

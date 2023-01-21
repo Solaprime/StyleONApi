@@ -14,6 +14,8 @@ namespace StyleONApi.Profiles
         {
             CreateMap<ApplicationUser, ApplicationUserDto>().
                 ForMember(dest => dest.FullName, opt=>opt.MapFrom(src=> $"{src.FirstName} {src.LastName}"));
+
+            
         }
     }
 

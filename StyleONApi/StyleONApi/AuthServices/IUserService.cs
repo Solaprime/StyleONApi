@@ -19,9 +19,23 @@ namespace StyleONApi.AuthServices
         Task<UserManagerResponse> AddUserToRole(RoleEmail roleEmail);
         Task<UserManagerResponse> RemoveUserFromRole(RoleEmail roleEmail);
 
-        Task<UserManagerResponse> VerifyAndGenerateToken(TokenRequest tokenRequest);
+       
         Task<SimpleResponse> UpdateSeller(Seller seller);
+       Task<UserManagerResponse> RegisterasSeller(Seller seller);
+        Task<UserManagerResponse> RegisterasDispatch(Dispatch dispatch);
         Task<SimpleResponse> FindAllUserInRole(string roleName);
+
+       // Flow to confirm email
+       // Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
+        Task<UserManagerResponse> ForgetPasswordAsync(string email);
+        Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);
+        Task<UserManagerResponse> LogoutAsync(ApplicationUser user);
+
         //Task<IdentityRole> GetUserRoles(string email);
+
+        // Logout
+        //How to restrict a seller from Posting
+        //Account LockOut
+        //
     }
 }

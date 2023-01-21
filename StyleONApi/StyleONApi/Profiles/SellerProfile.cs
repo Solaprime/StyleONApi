@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using System;
@@ -12,24 +12,19 @@ namespace StyleONApi.Profiles
     {
         public SellerProfile()
         {
-<<<<<<< HEAD
-            CreateMap<Seller, SellerDto>().
-                ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
 
-            CreateMap<SellerForCreationDto, Seller>();
-            //One of them is for Patch
-            CreateMap<SellerForUpdate, Seller>();
-            CreateMap<Seller, SellerForUpdate>();
-=======
-           
-            CreateMap<SellerForUpdateDto, Seller>();
-            CreateMap<Seller, SellerDto>();
-            CreateMap<Seller, SellerForUpdateDto>();
-            CreateMap<Seller, SellerDtoForProduct>();
-          //  CreateMap<ProductWithSellerDto, Seller>();
+          
 
-           // CreateMap<SellerDto, Seller>();
->>>>>>> SwaggerFlowController
+
+            // CreateMap<SellerDto, Seller>();
+
+
+            CreateMap<DispatchForUpdateDto, Dispatch>();
+            CreateMap<OrderDto, Order>();
+            CreateMap<Order, OrderDtoToReturn>();
+            CreateMap<OrderForUpdate, Order>();
+          
+
         }
     }
 }

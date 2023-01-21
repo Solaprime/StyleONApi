@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace StyleONApi.Model
 {
-    public class SellerForUpdateDto
+    public class DispatchForUpdateDto
     {
         [Required]
         public string Email { get; set; }
-        public string StoreName { get; set; }
-        public DateTime DateRegistered { get; set; }
-
-       // public Guid ApplicationUserId { get; set; }
-        //Store Adress
-        // Account Number 
     }
 }
