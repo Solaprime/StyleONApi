@@ -211,5 +211,11 @@
             a product will have Images
             </summary>
         </member>
+        <member name="M:StyleONApi.Repository.SellerRepository.SaveChanges">
+            <summary>
+             TODo
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

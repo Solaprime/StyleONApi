@@ -30,33 +30,10 @@ namespace StyleONApi.Entities
         public Guid SellerId { get; set; }
 
 
-        [ForeignKey("SellerId")]
-        public Seller Seller { get; set; }
-        public Guid SellerId { get; set; }
-
-<<<<<<< HEAD
-=======
-        public List<ImageObject> Images { get; set; }
+      
           
-        
-        [ForeignKey("SellerId")]
-        public Seller Seller { get; set; }
-
-        public Guid SellerId { get; set; }
-
+      
        
 
->>>>>>> SwaggerFlowController
-
-        // Check how to work with enum, and check how will u work with the User, seller, Buyer
-        //public Guid SellerId { get; set; }
-        //public enum Category { get; set; }
-        // review working with List in EFCORE
-        //public List<String> ImageUrl { get; set; } = new List<string>();
-
-
-
-        // when u start making changes to my entity classs 
-        // remeber to vhange the DTO AS well
     }
 }

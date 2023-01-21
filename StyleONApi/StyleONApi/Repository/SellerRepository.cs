@@ -16,6 +16,12 @@ namespace StyleONApi.Repository
         {
             _context = context;
         }
+
+        public Task<bool> CheckIfSellershasnotUpdated(Seller seller)
+        {
+            throw new NotImplementedException();
+        }
+
         public  async Task CreateMultipeSeller(IEnumerable<Seller> sellers)
         {
             if (sellers == null)
@@ -24,7 +30,7 @@ namespace StyleONApi.Repository
             }
             foreach (var seller in sellers)
             {
-                seller.Id = new Guid();
+                seller.SellerId= new Guid();
                 await _context.AddAsync(seller);
                 await _context.SaveChangesAsync();
             }
@@ -36,7 +42,7 @@ namespace StyleONApi.Repository
             {
                 throw new ArgumentNullException(nameof(seller));
             }
-            seller.Id = new Guid();
+            seller.SellerId = new Guid();
             await _context.Sellers.AddAsync(seller);
             await _context.SaveChangesAsync();
         }
@@ -52,25 +58,41 @@ namespace StyleONApi.Repository
             return await _context.Sellers.ToListAsync();
         }
 
-        public  async Task<IEnumerable<Seller>> GetSellers(SellerResourceParameters resourceParameters)
+        public Task<Seller> GetSeller(Guid sellerId)
         {
-            if (resourceParameters == null)
-            {
-                throw new ArgumentNullException(nameof(resourceParameters));
-            }
-            if (string.IsNullOrWhiteSpace(resourceParameters.SearchQuery))
-            {
-                return await GetAllSellerAsync();
-            }
-            var collectionOfSeller = _context.Sellers as IQueryable<Seller>;
-            if (!string.IsNullOrWhiteSpace(resourceParameters.SearchQuery))
-            {
-                var searchQuery = resourceParameters.SearchQuery.Trim();
-                collectionOfSeller = collectionOfSeller.Where(a => a.FirstName.Contains(searchQuery)||
-                a.LastName.Contains(searchQuery));
+            throw new NotImplementedException();
+        }
+
+        //Refacto Note the Usernam and First Name is now coming from ApplicationUSER
+        //public  async Task<IEnumerable<Seller>> GetSellers(SellerResourceParameters resourceParameters)
+        //{
+        //    if (resourceParameters == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(resourceParameters));
+        //    }
+        //    if (string.IsNullOrWhiteSpace(resourceParameters.SearchQuery))
+        //    {
+        //        return await GetAllSellerAsync();
+        //    }
+        //    var collectionOfSeller = _context.Sellers as IQueryable<Seller>;
+        //    if (!string.IsNullOrWhiteSpace(resourceParameters.SearchQuery))
+        //    {
+        //        var searchQuery = resourceParameters.SearchQuery.Trim();
+        //        collectionOfSeller = collectionOfSeller.Where(a => a.FirstName.Contains(searchQuery)||
+        //        a.LastName.Contains(searchQuery));
           
-            }
-            return await collectionOfSeller.ToListAsync();
+        //    }
+        //    return await collectionOfSeller.ToListAsync();
+        //}
+
+        public Task<IEnumerable<Seller>> GetSellers(SelllersResourceParameters resourceParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Seller>> GetSellers()
+        {
+            throw new NotImplementedException();
         }
 
         public  async Task<Seller> GetSingleSellerAsync(Guid SellerId)
@@ -79,7 +101,7 @@ namespace StyleONApi.Repository
             {
                 throw new ArgumentNullException(nameof(SellerId));
             }
-            return await _context.Sellers.Where(b => b.Id == SellerId).FirstOrDefaultAsync();
+            return await _context.Sellers.Where(b => b.SellerId == SellerId).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -97,7 +119,7 @@ namespace StyleONApi.Repository
             {
                 throw new ArgumentNullException(nameof(SellerId));
             }
-            var sellerToFind = await _context.Sellers.Where(c => c.Id == SellerId).FirstOrDefaultAsync();
+            var sellerToFind = await _context.Sellers.Where(c => c.SellerId == SellerId).FirstOrDefaultAsync();
             if (sellerToFind == null)
             {
                 return false;
@@ -108,6 +130,11 @@ namespace StyleONApi.Repository
         public void UpdateSeller(Seller seller)
         {
             _context.SaveChanges();
+        }
+
+        Task ISellerRepository.DeleteSeller(Seller seller)
+        {
+            throw new NotImplementedException();
         }
     }
 }
