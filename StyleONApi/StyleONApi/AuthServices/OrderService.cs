@@ -99,6 +99,19 @@ namespace StyleONApi.AuthServices
                 .FirstOrDefaultAsync(s => s.OrderId == orderId);
             return order;
         }
+
+        //I want the Order to retireve the Details of the Product of the Product 
+        public async Task<Order> GetOrderForUser(Guid orderId)
+        {
+            if (orderId == null)
+            {
+                throw new ArgumentNullException(nameof(orderId));
+            }
+
+            var order = await _context.Orders.Include(s => s.OrderItems).ThenInclude(s=> s.OrderProducts)
+                .FirstOrDefaultAsync(s => s.OrderId == orderId);
+            return order;
+        }
     }
 
 
@@ -118,5 +131,10 @@ namespace StyleONApi.AuthServices
 
 }
 
-//Get Order.
-//Test Order with Product that has a price 
+// Work with the Dispatch Order Flow, Only a registrrd dispatch can Pick up ann order
+//An admin will get all Pending order, assigne all pending order to a Dispatch
+//the state of orderstatus changes to enrout,
+//if dispatch delivers it the state of the Order becomes deliveres
+// and the Use drop a Reivew of the Product 
+//Write a Get method to get all method in the dB AND include sellerId, ProductID, TO MAKE Displaying Easy 
+//If seller Order is complete update the Seller nUMBER OF cOMPLETED sALES 

@@ -59,7 +59,9 @@ namespace StyleONApi.Entities
         public Guid ProductId { get; set; }
       //  public double ProductPrice { get; set; }
         public int Quantity { get; set; }
-       }
+        public Product OrderProducts { get; set; }
+
+    }
 
 
     //I dont need the ProductPrice to be sent to the Db 

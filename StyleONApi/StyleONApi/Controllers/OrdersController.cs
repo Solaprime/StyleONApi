@@ -74,6 +74,15 @@ namespace StyleONApi.Controllers
             var orderToReturn = _mapper.Map<OrderDtoToReturn>(orders);
             return Ok(orderToReturn);
         }
+
+
+        [HttpGet("userr/{orderid}")]
+        public async Task<ActionResult<OrderDtoToReturn>> GetOrderforUser(Guid orderid)
+        {
+            var orders = await _orderService.GetOrder(orderid);
+            var orderToReturn = _mapper.Map<OrderDtoToReturn>(orders);
+            return Ok(orderToReturn);
+        }
     }
 }
  

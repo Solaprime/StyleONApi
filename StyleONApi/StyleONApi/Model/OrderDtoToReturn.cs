@@ -12,6 +12,11 @@ namespace StyleONApi.Model
         public Guid OrderId { get; set; }
         public Double TotalPrice { get; set; }
         public OrderStatus OrderState { get; set; }
+
+        public Product OrderProducts { get; set; }
+
+
+        //Find a means to cast orderProduct to ProductDto
     }
 
 }

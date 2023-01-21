@@ -18,5 +18,7 @@ namespace StyleONApi.AuthServices
         //
         //Task<bool> CheckProduct(Guid sellerId, Guid productId);
         Task<Order> GetOrder(Guid orderId);
+
+        Task<Order> GetOrderForUser(Guid orderId);
     }
 }

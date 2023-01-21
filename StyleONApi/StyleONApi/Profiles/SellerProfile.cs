@@ -25,6 +25,7 @@ namespace StyleONApi.Profiles
             CreateMap<DispatchForUpdateDto, Dispatch>();
             CreateMap<OrderDto, Order>();
             CreateMap<Order, OrderDtoToReturn>();
+            CreateMap<OrderForUpdate, Order>();
         }
     }
 }
