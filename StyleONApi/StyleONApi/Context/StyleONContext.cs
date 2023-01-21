@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StyleONApi.Entities;
 using System;
@@ -12,7 +12,7 @@ namespace StyleONApi.Context
     {
         public StyleONContext(DbContextOptions options) : base(options)
         {
-                
+                     
         }
         public DbSet<Product> Products { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -22,7 +22,7 @@ namespace StyleONApi.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //  modelBuilder.Entity<OrderItem>().HasNoKey();
+
         }
 
         

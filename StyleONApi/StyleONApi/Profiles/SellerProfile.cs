@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using StyleONApi.Entities;
 using StyleONApi.Model;
 using System;
@@ -12,12 +12,9 @@ namespace StyleONApi.Profiles
     {
         public SellerProfile()
         {
-           
-            CreateMap<SellerForUpdateDto, Seller>();
-            CreateMap<Seller, SellerDto>();
-            CreateMap<Seller, SellerForUpdateDto>();
-            CreateMap<Seller, SellerDtoForProduct>();
-            //  CreateMap<ProductWithSellerDto, Seller>();
+
+          
+
 
             // CreateMap<SellerDto, Seller>();
 
@@ -26,6 +23,8 @@ namespace StyleONApi.Profiles
             CreateMap<OrderDto, Order>();
             CreateMap<Order, OrderDtoToReturn>();
             CreateMap<OrderForUpdate, Order>();
+          
+
         }
     }
 }

@@ -103,7 +103,7 @@ namespace StyleONApi.Controllers
           [FromBody] JsonPatchDocument<ProductForUpdate> patchDocument)
         {
 
-            var ifSellerExist = await _repository.SellerExist(sellerId);
+               var ifSellerExist = await _repository.SellerExist(sellerId);
 
             if (!ifSellerExist)
             {
@@ -124,8 +124,8 @@ namespace StyleONApi.Controllers
             //   await  _repository.UpdateProduct(productToPatch);
             return NoContent();
 
-
         }
+   
 
         /// <summary>
         ///   Searchong A list of product posted by seller with the given sellerId. The Resource Parameters contains search Info

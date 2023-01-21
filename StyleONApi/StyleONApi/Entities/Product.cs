@@ -14,15 +14,28 @@ namespace StyleONApi.Entities
         public Guid ProductId { get; set; }
         [Required]
         public string Name { get; set; }
+        [Required]
         public Double Price { get; set; }
+        [Required]
         public string Description { get; set; }
       
+
         public Double SlashPrice { get; set; }
       
         public Double Reviews { get; set; }
         public DateTimeOffset DatePosted { get; set; }
+        public List<ImageObject> Images { get; set; }
+
+        public Seller Seller { get; set; }
+        public Guid SellerId { get; set; }
 
 
+        [ForeignKey("SellerId")]
+        public Seller Seller { get; set; }
+        public Guid SellerId { get; set; }
+
+<<<<<<< HEAD
+=======
         public List<ImageObject> Images { get; set; }
           
         
@@ -33,6 +46,7 @@ namespace StyleONApi.Entities
 
        
 
+>>>>>>> SwaggerFlowController
 
         // Check how to work with enum, and check how will u work with the User, seller, Buyer
         //public Guid SellerId { get; set; }

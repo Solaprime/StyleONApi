@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,6 +9,8 @@ namespace StyleONApi.Entities
 {
     public class Seller
     {
+
+      
         public Seller()
         {
             Products = new List<Product>();
@@ -39,6 +41,6 @@ namespace StyleONApi.Entities
 
 
 
-        //Refactor the way u refacto Dispacth flow 
+
     }
 }

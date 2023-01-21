@@ -14,5 +14,6 @@ namespace StyleONApi.Repository
           Task<bool>  CheckIfSellershasnotUpdated(Seller seller);
         Task<Seller> GetSeller(Guid sellerId);
         Task DeleteSeller(Seller seller);
+
     }
 }
